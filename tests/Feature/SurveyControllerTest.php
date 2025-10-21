@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Models\StarWarsCharacter;
 use App\Models\SurveyQuestion;
 use App\Models\SurveyResponse;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -17,6 +18,9 @@ class SurveyControllerTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
+
+        // Create test Star Wars characters
+        StarWarsCharacter::factory()->count(10)->create();
 
         // Create some test survey questions
         SurveyQuestion::factory()->count(10)->create([
@@ -34,6 +38,7 @@ class SurveyControllerTest extends TestCase
             ->has('questions', 5)
             ->has('questions.0.id')
             ->has('questions.0.question')
+            ->has('characters')
         );
     }
 
@@ -68,9 +73,11 @@ class SurveyControllerTest extends TestCase
         $questions = SurveyQuestion::limit(5)->get();
         session(['survey_questions' => $questions]);
 
+        $character = StarWarsCharacter::first();
+
         $validData = [
             'first_name' => fake()->firstName(),
-            'character' => 'Luke Skywalker',
+            'character' => $character->slug,
             'questions' => $questions->pluck('id')->toArray(),
             'responses' => [8, 7, 9, 6, 10],
         ];
@@ -96,10 +103,11 @@ class SurveyControllerTest extends TestCase
 
         // Use different question IDs
         $differentQuestions = SurveyQuestion::skip(5)->limit(5)->get();
+        $character = StarWarsCharacter::first();
 
         $invalidData = [
             'first_name' => fake()->firstName(),
-            'character' => 'Darth Vader',
+            'character' => $character->slug,
             'questions' => $differentQuestions->pluck('id')->toArray(),
             'responses' => [1, 2, 3, 4, 5],
         ];
@@ -130,10 +138,11 @@ class SurveyControllerTest extends TestCase
     {
         $questions = SurveyQuestion::limit(5)->get();
         session(['survey_questions' => $questions]);
+        $character = StarWarsCharacter::first();
 
         $invalidData = [
             'first_name' => fake()->firstName(),
-            'character' => 'Yoda',
+            'character' => $character->slug,
             'questions' => $questions->pluck('id')->take(3)->toArray(), // Only 3 questions
             'responses' => [1, 2, 3], // Only 3 responses
         ];
@@ -150,10 +159,11 @@ class SurveyControllerTest extends TestCase
     {
         $questions = SurveyQuestion::limit(5)->get();
         session(['survey_questions' => $questions]);
+        $character = StarWarsCharacter::first();
 
         $invalidData = [
             'first_name' => fake()->firstName(),
-            'character' => 'Princess Leia',
+            'character' => $character->slug,
             'questions' => $questions->pluck('id')->toArray(),
             'responses' => [11, 0, -1, 15, 5], // Out of range values
         ];
@@ -177,15 +187,16 @@ class SurveyControllerTest extends TestCase
     {
         // Create test data
         $questions = SurveyQuestion::factory()->count(3)->create();
+        $characters = StarWarsCharacter::limit(2)->get();
 
         SurveyResponse::factory()->create([
-            'character' => 'Luke Skywalker',
+            'character' => $characters[0]->slug,
             'questions' => $questions->pluck('id')->toArray(),
             'responses' => [8, 7, 9],
         ]);
 
         SurveyResponse::factory()->create([
-            'character' => 'Darth Vader',
+            'character' => $characters[1]->slug,
             'questions' => $questions->pluck('id')->toArray(),
             'responses' => [6, 9, 7],
         ]);
@@ -228,52 +239,54 @@ class SurveyControllerTest extends TestCase
     public function test_character_statistics_returns_correct_data(): void
     {
         $questions = SurveyQuestion::factory()->count(2)->create();
+        $characters = StarWarsCharacter::limit(2)->get();
 
         SurveyResponse::factory()->create([
-            'character' => 'Luke Skywalker',
+            'character' => $characters[0]->slug,
             'questions' => $questions->pluck('id')->toArray(),
             'responses' => [8, 7],
         ]);
 
         SurveyResponse::factory()->create([
-            'character' => 'Darth Vader',
+            'character' => $characters[1]->slug,
             'questions' => $questions->pluck('id')->toArray(),
             'responses' => [6, 9],
         ]);
 
-        $response = $this->get(route('character_statistics', ['character' => 'Luke Skywalker']));
+        $response = $this->get(route('character_statistics', ['character' => $characters[0]->slug]));
 
         $response->assertStatus(200);
         $response->assertInertia(fn (Assert $page) => $page
             ->component('Survey/CharacterStatistics')
             ->has('statistics')
-            ->where('character', 'Luke Skywalker')
+            ->where('character', $characters[0]->slug)
         );
     }
 
     public function test_character_statistics_filters_by_character(): void
     {
         $question = SurveyQuestion::factory()->create();
+        $characters = StarWarsCharacter::limit(2)->get();
 
         SurveyResponse::factory()->create([
-            'character' => 'Luke Skywalker',
+            'character' => $characters[0]->slug,
             'questions' => [$question->id],
             'responses' => [8],
         ]);
 
         SurveyResponse::factory()->create([
-            'character' => 'Darth Vader',
+            'character' => $characters[1]->slug,
             'questions' => [$question->id],
             'responses' => [3],
         ]);
 
-        $response = $this->get(route('character_statistics', ['character' => 'Luke Skywalker']));
+        $response = $this->get(route('character_statistics', ['character' => $characters[0]->slug]));
 
         $response->assertStatus(200);
         $response->assertInertia(fn (Assert $page) => $page
             ->component('Survey/CharacterStatistics')
             ->has('statistics')
-            ->where('character', 'Luke Skywalker')
+            ->where('character', $characters[0]->slug)
             ->where("statistics.{$question->id}.average_answer", 8)
             ->where("statistics.{$question->id}.total_responses", 1)
         );
@@ -282,15 +295,16 @@ class SurveyControllerTest extends TestCase
     public function test_character_statistics_without_character_filter(): void
     {
         $question = SurveyQuestion::factory()->create();
+        $characters = StarWarsCharacter::limit(2)->get();
 
         SurveyResponse::factory()->create([
-            'character' => 'Luke Skywalker',
+            'character' => $characters[0]->slug,
             'questions' => [$question->id],
             'responses' => [8],
         ]);
 
         SurveyResponse::factory()->create([
-            'character' => 'Darth Vader',
+            'character' => $characters[1]->slug,
             'questions' => [$question->id],
             'responses' => [4],
         ]);
@@ -310,9 +324,10 @@ class SurveyControllerTest extends TestCase
     {
         $validQuestion = SurveyQuestion::factory()->create();
         $invalidQuestionId = 999; // Non-existent question ID
+        $character = StarWarsCharacter::first();
 
         SurveyResponse::factory()->create([
-            'character' => 'Luke Skywalker',
+            'character' => $character->slug,
             'questions' => [$validQuestion->id, $invalidQuestionId],
             'responses' => [8, 7],
         ]);
