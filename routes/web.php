@@ -24,6 +24,7 @@ Route::post('survey', [App\Http\Controllers\SurveyController::class, 'store'])->
 Route::get('survey-success', [App\Http\Controllers\SurveyController::class, 'success'])->name('survey.success');
 Route::get('survey-statistics', [App\Http\Controllers\SurveyController::class, 'statistics'])->name('survey_statistics');
 Route::get('character-statistics', [App\Http\Controllers\SurveyController::class, 'characterStatistics'])->name('character_statistics');
+Route::get('api/characters', [App\Http\Controllers\SurveyController::class, 'getCharacters'])->name('api.characters');
 
 // Debug route to clear survey session (remove in production)
 Route::get('survey/reset', function () {

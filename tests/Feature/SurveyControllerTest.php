@@ -342,4 +342,55 @@ class SurveyControllerTest extends TestCase
             ->missing("statistics.{$invalidQuestionId}")
         );
     }
+
+    public function test_survey_statistics_handles_no_responses(): void
+    {
+        // Create questions but no responses
+        SurveyQuestion::factory()->count(3)->create();
+
+        $response = $this->get(route('survey_statistics'));
+
+        $response->assertStatus(200);
+        $response->assertInertia(fn (Assert $page) => $page
+            ->component('Survey/Statistics')
+            ->has('statistics')
+            ->has('characters')
+        );
+    }
+
+    public function test_character_statistics_handles_no_responses(): void
+    {
+        // Create questions but no responses
+        SurveyQuestion::factory()->count(2)->create();
+        $character = StarWarsCharacter::first();
+
+        $response = $this->get(route('character_statistics', ['character' => $character->slug]));
+
+        $response->assertStatus(200);
+        $response->assertInertia(fn (Assert $page) => $page
+            ->component('Survey/CharacterStatistics')
+            ->has('statistics')
+            ->where('character', $character->slug)
+            ->has('characters')
+        );
+    }
+
+    public function test_get_characters_returns_json(): void
+    {
+        $response = $this->get(route('api.characters'));
+
+        $response->assertStatus(200);
+        $response->assertJsonStructure([
+            '*' => [
+                'label',
+                'value',
+                'description',
+            ],
+        ]);
+
+        // Verify the data is ordered by name
+        $characters = $response->json();
+        $this->assertCount(10, $characters);
+        $this->assertIsArray($characters);
+    }
 }
