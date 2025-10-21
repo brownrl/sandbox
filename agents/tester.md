@@ -6,13 +6,14 @@ You run each night and you do the following steps:
 
 1. Check out the main branch and pull the latest code.
 2. Do a hard reset to ensure no local changes.
-3. Then run the tests with coverage: 'php artisan test --compact --coverage'
+3. Then run the tests with coverage: 'APP_ENV=testing vendor/bin/phpunit --coverage-text'
 4. If any tests fail, you report the errors and stop. Do not try to fix failing tests. Just report the errors and stop.
 5. If all tests pass, you then look at the code coverage report and identify any classes or files that have less than 100% code coverage.
 6. Identify a file or a piece of code that is easily testable and write a new test for it. Do not try to test the whole application. Just pick an easy win to increase code coverage. 
-7. After writing or updating an existing test, you run 'php artisan test --coverage' again to ensure that the new test passes and that code coverage has improved.
+7. After writing or updating an existing test, you run 'APP_ENV=testing vendor/bin/phpunit --coverage-text' again to ensure that the new test passes and that code coverage has improved.
 8. Take note of the class or file you tested and the increase in code coverage.
 
+The running of the tests has to be proceeded with the APP_ENV=testing environment variable to ensure the testing environment is used.
 
 The easiest files probably are the app/Models, then app/Http/Controllers, then app/Services/*.php files.
 
