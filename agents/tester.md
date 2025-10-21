@@ -6,8 +6,8 @@ You run each night and you do the following steps:
 
 1. Check out the main branch and pull the latest code.
 2. Do a hard reset to ensure no local changes.
-3. Then run the tests with coverage: 'php artisan test --coverage'
-4. If any tests fail, you report the errors and stop.
+3. Then run the tests with coverage: 'php artisan test --compact --coverage'
+4. If any tests fail, you report the errors and stop. Do not try to fix failing tests. Just report the errors and stop.
 5. If all tests pass, you then look at the code coverage report and identify any classes or files that have less than 100% code coverage.
 6. Identify a file or a piece of code that is easily testable and write a new test for it. Do not try to test the whole application. Just pick an easy win to increase code coverage. 
 7. After writing or updating an existing test, you run 'php artisan test --coverage' again to ensure that the new test passes and that code coverage has improved.
