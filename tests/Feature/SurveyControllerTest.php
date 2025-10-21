@@ -342,4 +342,12 @@ class SurveyControllerTest extends TestCase
             ->missing("statistics.{$invalidQuestionId}")
         );
     }
+
+    public function test_get_characters_returns_json_response(): void
+    {
+        $response = $this->get(route('api.characters'));
+
+        $response->assertStatus(200);
+        $response->assertJsonCount(10);
+    }
 }
