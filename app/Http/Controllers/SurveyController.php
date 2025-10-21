@@ -76,6 +76,8 @@ class SurveyController extends Controller
         $questions = SurveyQuestion::all()->keyBy('id');
 
         $statistics = [];
+        $global_statistics = [];
+        $global_statistics['total_responses'] = $responses->count();
 
         foreach ($responses as $response) {
             foreach ($response->questions as $index => $questionId) {
@@ -131,9 +133,17 @@ class SurveyController extends Controller
             ->orderBy('name')
             ->get();
 
+        $global_statistics['most_popular_character_overall'] = SurveyResponse::select('character')
+            ->groupBy('character')
+            ->orderByRaw('COUNT(*) DESC')
+            ->limit(1)
+            ->pluck('character')
+            ->first();
+
         return Inertia::render('Survey/Statistics', [
             'statistics' => $statistics,
             'characters' => $characters,
+            'global_statistics' => $global_statistics,
         ]);
     }
 

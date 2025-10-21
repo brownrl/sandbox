@@ -22,6 +22,10 @@ interface Stat {
 interface Props {
     statistics: Record<number, Stat>;
     characters: CharacterOption[];
+    global_statistics: {
+        total_responses: number;
+        most_popular_character_overall: string;
+    };
 }
 
 const props = defineProps<Props>();
@@ -69,6 +73,22 @@ const maxCount = (responses: Record<number, number>) => {
                 </div>
 
                 <div v-else class="space-y-8">
+
+                    <div class="p-6 bg-white/5 rounded-lg border border-white/10">
+                        <h2 class="text-xl font-semibold text-white mb-4">Global Statistics</h2>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                            <div class="bg-white/10 p-4 rounded-lg">
+                                <h3 class="text-lg font-medium text-purple-200 mb-2">Total Responses</h3>
+                                <p class="text-2xl font-bold text-white">{{ global_statistics.total_responses }}</p>
+                            </div>
+                            <div class="bg-white/10 p-4 rounded-lg">
+                                <h3 class="text-lg font-medium text-purple-200 mb-2">Most Popular Character Overall</h3>
+                                <p class="text-2xl font-bold text-white">{{ getCharacterLabel(global_statistics.most_popular_character_overall) }}</p>
+                            </div>
+                        </div>
+                    </div>
+
+
                     <div v-for="(stat, questionId) in statistics" :key="questionId" class="p-6 bg-white/5 rounded-lg border border-white/10">
                         <h2 class="text-xl font-semibold text-white mb-4">{{ stat.question }}</h2>
 
