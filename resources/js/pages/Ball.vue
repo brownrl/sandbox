@@ -38,20 +38,6 @@ const getOctagonVertices = (rotation: number) => {
   return vertices
 }
 
-// Check if point is inside octagon using ray casting
-const isInsideOctagon = (x: number, y: number, rotation: number) => {
-  const vertices = getOctagonVertices(rotation)
-  let inside = false
-  
-  for (let i = 0, j = vertices.length - 1; i < vertices.length; j = i++) {
-    if (((vertices[i].y > y) !== (vertices[j].y > y)) &&
-        (x < (vertices[j].x - vertices[i].x) * (y - vertices[i].y) / (vertices[j].y - vertices[i].y) + vertices[i].x)) {
-      inside = !inside
-    }
-  }
-  return inside
-}
-
 // Find closest point on octagon edge and distance
 const getClosestEdgePoint = (ballCenterX: number, ballCenterY: number, rotation: number) => {
   const vertices = getOctagonVertices(rotation)

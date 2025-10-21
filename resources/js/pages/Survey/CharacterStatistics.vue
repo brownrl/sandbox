@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, watch, computed } from 'vue';
+import { ref, watch } from 'vue';
 import { Head, router, Link } from '@inertiajs/vue3';
 import { survey_statistics } from '@/routes';
 import Card from '@/components/ui/Card.vue';
