@@ -6,8 +6,8 @@ use App\Http\Requests\StoreSurveyRequest;
 use App\Models\StarWarsCharacter;
 use App\Models\SurveyQuestion;
 use App\Models\SurveyResponse;
-use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\RedirectResponse;
 use Inertia\Inertia;
 use Inertia\Response;
 

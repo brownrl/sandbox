@@ -15,4 +15,4 @@ use Illuminate\Support\Facades\Route;
 */
 
 // Route for getting Star Wars characters
-Route::get('/characters', [App\Http\Controllers\SurveyController::class, 'getCharacters']);
+Route::get('/characters', [App\Http\Controllers\SurveyController::class, 'getCharacters'])->name('api.characters');
