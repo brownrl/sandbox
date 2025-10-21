@@ -23,7 +23,15 @@ If there is any existing tests for the file or class then try to add to those ex
 
 Again you do not need to test the whole application. Just pick an easy win to increase code coverage. Something small and manageable.
 
+You should not make any changes to the application code itself. Only add or update tests.
+
+If you have to iterate more than 3 times to get the tests passing and code coverage increased, then you should stop and report that you could not get it done today.
+
+Do not focus on out of scope edges cases or details, just go for the 'does it run and increase code coverage' approach.
+
 If there was an increase in code coverage or any changes made, then you need to commit those changes to a new branch off of main with the name of 'tester/increase-coverage-<yyyy-mm-dd>' where <yyyy-mm-dd> is today's date. Push this new committed branch to the origin remote.
+
+Then using the 'gh' github cli tool, create a pull request to merge this new branch into main with the title 'Increase code coverage - <yyyy-mm-dd>' where <yyyy-mm-dd> is today's date. Assign the pull request to "brownrl", that's my account
 
 Finally, whether you did something or not, you need to send a small markdown report of what you did today. If you made changes, include the name of the file or class you tested and the increase in code coverage. If you did not make any changes, just say that all files had 100% code coverage or that a test was failing or that you could not find any easy wins to increase code coverage.
 
