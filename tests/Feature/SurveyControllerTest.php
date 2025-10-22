@@ -350,4 +350,34 @@ class SurveyControllerTest extends TestCase
         $response->assertStatus(200);
         $response->assertJsonCount(10);
     }
+
+    public function test_statistics_handles_no_responses(): void
+    {
+        $question = SurveyQuestion::factory()->create();
+
+        $response = $this->get(route('survey_statistics'));
+
+        $response->assertStatus(200);
+        $response->assertInertia(fn (Assert $page) => $page
+            ->component('Survey/Statistics')
+            ->has('statistics')
+            ->where("statistics.{$question->id}.average_answer", 0)
+            ->where("statistics.{$question->id}.total_responses", 0)
+        );
+    }
+
+    public function test_character_statistics_handles_no_responses(): void
+    {
+        $question = SurveyQuestion::factory()->create();
+        $character = StarWarsCharacter::first();
+
+        $response = $this->get(route('character_statistics', ['character' => $character->slug]));
+
+        $response->assertStatus(200);
+        $response->assertInertia(fn (Assert $page) => $page
+            ->component('Survey/CharacterStatistics')
+            ->has('statistics')
+            ->where('character', $character->slug)
+        );
+    }
 }

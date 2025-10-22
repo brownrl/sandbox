@@ -76,19 +76,19 @@ class SurveyController extends Controller
         $questions = SurveyQuestion::all()->keyBy('id');
 
         $statistics = [];
+        foreach ($questions as $question) {
+            $statistics[$question->id] = [
+                'question' => $question->question,
+                'character_counts' => [],
+                'response_counts' => array_fill(1, 10, 0),
+            ];
+        }
+
         $global_statistics = [];
         $global_statistics['total_responses'] = $responses->count();
 
         foreach ($responses as $response) {
             foreach ($response->questions as $index => $questionId) {
-                if (! isset($statistics[$questionId])) {
-                    $statistics[$questionId] = [
-                        'question' => $questions[$questionId]->question,
-                        'character_counts' => [],
-                        'response_counts' => array_fill(1, 10, 0),
-                    ];
-                }
-
                 $character = $response->character;
                 $rating = $response->responses[$index];
 
