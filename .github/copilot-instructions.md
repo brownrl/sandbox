@@ -1,60 +1,77 @@
 # GitHub Copilot Instructions
 
 ## Project Overview
-This is **Sandbox** - a Laravel 12 + Vue 3 + Inertia.js application with a beautiful full-screen clock feature, hosted using Laravel Herd.
+This is **Sandbox** - a Laravel 12 + Vue 3 + Inertia.js application featuring a real-time clock, Star Wars survey system, and Laravel Fortify authentication, hosted using Laravel Herd.
 
 ## Development Preferences
 
 ### Build Process (IMPORTANT)
 - **Always suggest**: `npm run build` 
-- **Never suggest**: `npm run dev` or watch mode
-- **Reason**: We prefer single-step builds over background processes for cleaner development
+- **Alternative**: `composer run dev` (runs concurrent processes: server, queue, logs, vite)
+- **Never suggest**: `npm run dev` alone or watch mode without context
+- **Reason**: We prefer single-step builds or the comprehensive dev script
 
 ### Architecture Patterns
-- **Backend**: Laravel controllers return `Inertia::render('ComponentName')`
-- **Frontend**: Vue 3 Composition API with `<script setup lang="ts">
-- **Routing**: Use auto-generated TypeScript routes from `@/routes`
-- **Styling**: Tailwind CSS 4.1 utility classes
+- **Backend**: Laravel controllers return `Inertia::render('ComponentName', $data)`
+- **Frontend**: Vue 3 Composition API with `<script setup lang="ts">`
+- **Routing**: Use auto-generated TypeScript routes from `@/routes` via Wayfinder
+- **Styling**: Tailwind CSS 4.1 with new `@import "tailwindcss"` syntax
+- **Data Storage**: JSON arrays in database columns (questions/responses arrays)
 
 ### File Organization
 ```
-resources/js/pages/     # Inertia page components (main app pages)
-resources/js/components/ # Reusable Vue components  
-resources/js/routes/    # Auto-generated TypeScript routes (don't edit manually)
-routes/web.php          # Laravel routes (edit here to add new routes)
+resources/js/pages/          # Inertia page components (Survey, Clock, etc.)
+resources/js/components/ui/  # Reusable UI components (Card, etc.)
+resources/js/routes/         # Auto-generated TypeScript routes (DON'T EDIT)
+resources/js/composables/    # Vue composables (useTwoFactorAuth, etc.)
+resources/js/layouts/        # Layout components for different page types
+app/Http/Controllers/        # Laravel controllers (SurveyController, etc.)
+app/Http/Middleware/         # Custom middleware (HandleInertiaRequests, etc.)
+app/Models/                  # Eloquent models with proper casts() methods
+routes/web.php              # Laravel routes (EDIT HERE for new routes)
+bootstrap/app.php           # Laravel 12 middleware/exception registration
 ```
 
 ### Code Style Guidelines
-- **Vue Components**: Use Composition API with TypeScript
-- **Imports**: Use `@/` alias for `resources/js/` directory
-- **CSS**: Prefer Tailwind utilities over custom CSS
-- **Routes**: Import from `@/routes` and use generated functions
+- **Vue Components**: Use Composition API with TypeScript interfaces
+- **Imports**: Use `@/` alias for `resources/js/` directory  
+- **CSS**: Prefer Tailwind utilities, use gradient backgrounds consistently
+- **Routes**: Import named route functions from `@/routes` and call as functions
+- **Models**: Use `casts()` method instead of `$casts` property (Laravel 12 style)
 
 ### URL Structure (Local Development)
-- Base: `https://sandbox.test` (Laravel Herd with HTTPS for local development)
+- Base: `https://sandbox.test` (Laravel Herd with HTTPS)
 - Clock: `https://sandbox.test/clock` (main feature)
-- No localhost or port numbers (Herd manages this locally)
-- **Note**: Production URLs will be different - this is local development setup only
+- Survey: `https://sandbox.test/survey` (Star Wars character survey)
+- No localhost or port numbers (Herd manages this automatically)
+
+### Critical Architecture Decisions
+- **Session-based survey questions**: 5 random questions from 20+ stored in session
+- **Array-based responses**: Questions and responses stored as JSON arrays in database
+- **Character-based statistics**: Survey responses linked to Star Wars characters by slug
+- **Wayfinder integration**: All routes auto-generated with full TypeScript support
 
 ### Adding New Features
-1. Create Vue page component in `resources/js/pages/`
-2. Add route in `routes/web.php` 
+1. Add route in `routes/web.php` with proper naming
+2. Create Vue page component in `resources/js/pages/`
 3. Run `npm run build` to regenerate TypeScript routes
-4. Import and use the generated route function
+4. Import and use the generated route function: `import { routeName } from '@/routes'`
 
 ### Technology Stack
-- Laravel 12 with Inertia.js
-- Vue 3 + TypeScript 
-- Tailwind CSS 4.1 (new syntax)
-- Vite 7 with Laravel Vite Plugin + Wayfinder
-- SQLite database
-- Laravel Herd hosting
+- Laravel 12 with streamlined structure (no Kernel.php)
+- Vue 3 + TypeScript with full type safety
+- Inertia.js v2 with new features (deferred props, polling, etc.)
+- Tailwind CSS 4.1 (new `@import` syntax, updated utility names)
+- Vite 7 with Laravel plugin + Wayfinder for route generation
+- SQLite database with JSON column support
+- Laravel Herd for local development
 
 ### Current Features
-- Full-screen real-time clock (`/clock`) with gradient background and animations
-- Laravel Fortify authentication system
-- Auto-generated TypeScript routes via Wayfinder plugin
-- Responsive design with Tailwind CSS
+- Real-time clock (`/clock`) with custom animations and JetBrains Mono font
+- Star Wars survey system with character selection and rating scales
+- Statistics dashboards with visual charts and character filtering
+- Laravel Fortify authentication with 2FA support
+- Auto-generated TypeScript routes for type-safe navigation
 
 ## Code Examples
 
