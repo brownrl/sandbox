@@ -15,7 +15,11 @@ You run each night and you do the following steps:
 
 The running of the tests has to be proceeded with the APP_ENV=testing environment variable to ensure the testing environment is used.
 
-The easiest files probably are the app/Models, then app/Http/Controllers, then app/Services/ files. You should probably stay away from app/Providers/ files as they are more complex to test.
+You can also use: 'APP_ENV=testing php artisan test --compact --coverage' to run the tests with coverage. This will give you a more compact output and show the lines not covered.
+
+When looking for a file or class to test, look for something small and manageable.
+
+The easiest files probably are the app/Models, then app/Http/Controllers, then app/Services/ files. You should probably stay away from app/Providers/ files as they are more complex to test and involve things like rate limiting, middleware, and other more complex things.
 
 When you write tests, you write them in the appropriate test file in the tests/Feature or tests/Unit directories.
 

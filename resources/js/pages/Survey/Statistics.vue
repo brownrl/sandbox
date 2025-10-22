@@ -74,8 +74,10 @@ const maxCount = (responses: Record<number, number>) => {
 
                 <div v-else class="space-y-8">
 
+                    <h2 class="text-xl font-semibold text-white mb-4">Global Statistics</h2>
+                    
                     <div class="p-6 bg-white/5 rounded-lg border border-white/10">
-                        <h2 class="text-xl font-semibold text-white mb-4">Global Statistics</h2>
+                        
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
                             <div class="bg-white/10 p-4 rounded-lg">
                                 <h3 class="text-lg font-medium text-purple-200 mb-2">Total Responses</h3>
@@ -89,7 +91,14 @@ const maxCount = (responses: Record<number, number>) => {
                     </div>
 
 
+
+                     <h2 class="text-xl font-semibold text-white mb-4">Individual Question Statistics</h2>
+
+
                     <div v-for="(stat, questionId) in statistics" :key="questionId" class="p-6 bg-white/5 rounded-lg border border-white/10">
+
+                        
+
                         <h2 class="text-xl font-semibold text-white mb-4">{{ stat.question }}</h2>
 
                         <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
