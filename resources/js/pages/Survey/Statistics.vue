@@ -2,6 +2,10 @@
 import { Head, Link } from '@inertiajs/vue3';
 import { character_statistics } from '@/routes';
 import Card from '@/components/ui/Card.vue';
+import PageContainer from '@/components/ui/PageContainer.vue';
+import PageHeader from '@/components/ui/PageHeader.vue';
+import StatCard from '@/components/ui/StatCard.vue';
+import Typography from '@/components/ui/Typography.vue';
 
 interface CharacterOption {
     value: string;
@@ -48,25 +52,25 @@ const maxCount = (responses: Record<number, number>) => {
 <template>
     <Head title="Survey Statistics - Sandbox" />
 
-    <div class="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 py-12 px-4 sm:px-6 lg:px-8">
-        <div class="max-w-4xl mx-auto">
+    <PageContainer>
+        <div class="survey-content-wrapper">
             <Card>
-                <div class="text-center mb-8">
-                    <h1 class="text-4xl font-bold text-white mb-4">
-                        📊 Survey Statistics 📊
-                    </h1>
-                    <p class="text-purple-200 text-lg">
-                        Insights from the Star Wars survey.
-                    </p>
-                    <div class="mt-4">
-                        <Link
-                            :href="character_statistics.url()"
-                            class="text-purple-300 hover:text-purple-100 transition-colors duration-200"
-                        >
-                            View Character Statistics
-                        </Link>
-                    </div>
-                </div>
+                <PageHeader 
+                    title="Survey Statistics" 
+                    emoji="📊"
+                    subtitle="Insights from the Star Wars survey."
+                >
+                    <template #additional>
+                        <div class="mt-4">
+                            <Link
+                                :href="character_statistics.url()"
+                                class="nav-link"
+                            >
+                                View Character Statistics
+                            </Link>
+                        </div>
+                    </template>
+                </PageHeader>
 
                 <div v-if="Object.keys(statistics).length === 0" class="text-center text-white">
                     <p>No survey data available yet. Be the first to submit a response!</p>
@@ -74,54 +78,48 @@ const maxCount = (responses: Record<number, number>) => {
 
                 <div v-else class="space-y-8">
 
-                    <h2 class="text-xl font-semibold text-white mb-4">Global Statistics</h2>
+                    <Typography variant="h2">Global Statistics</Typography>
                     
-                    <div class="p-6 bg-white/5 rounded-lg border border-white/10">
-                        
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-                            <div class="bg-white/10 p-4 rounded-lg">
-                                <h3 class="text-lg font-medium text-purple-200 mb-2">Total Responses</h3>
-                                <p class="text-2xl font-bold text-white">{{ global_statistics.total_responses }}</p>
-                            </div>
-                            <div class="bg-white/10 p-4 rounded-lg">
-                                <h3 class="text-lg font-medium text-purple-200 mb-2">Most Popular Character Overall</h3>
-                                <p class="text-2xl font-bold text-white">{{ getCharacterLabel(global_statistics.most_popular_character_overall) }}</p>
-                            </div>
+                    <div class="survey-card-section">
+                        <div class="stat-grid-2 mb-6">
+                            <StatCard 
+                                title="Total Responses" 
+                                :value="global_statistics.total_responses"
+                            />
+                            <StatCard 
+                                title="Most Popular Character Overall" 
+                                :value="getCharacterLabel(global_statistics.most_popular_character_overall)"
+                            />
                         </div>
                     </div>
 
+                    <Typography variant="h2">Individual Question Statistics</Typography>
 
 
-                     <h2 class="text-xl font-semibold text-white mb-4">Individual Question Statistics</h2>
+                    <div v-for="(stat, questionId) in statistics" :key="questionId" class="survey-card-section">
+                        <Typography variant="h3" class="stat-title">{{ stat.question }}</Typography>
 
-
-                    <div v-for="(stat, questionId) in statistics" :key="questionId" class="p-6 bg-white/5 rounded-lg border border-white/10">
-
-                        
-
-                        <h2 class="text-xl font-semibold text-white mb-4">{{ stat.question }}</h2>
-
-                        <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
-                            <div class="bg-white/10 p-4 rounded-lg">
-                                <h3 class="text-lg font-medium text-purple-200 mb-2">Most Identified Character</h3>
-                                <p class="text-2xl font-bold text-white">{{ getCharacterLabel(stat.most_chosen_character) }}</p>
-                            </div>
-                            <div class="bg-white/10 p-4 rounded-lg">
-                                <h3 class="text-lg font-medium text-purple-200 mb-2">Most Common Answer</h3>
-                                <p class="text-2xl font-bold text-white">{{ stat.most_common_answer }}</p>
-                            </div>
-                            <div class="bg-white/10 p-4 rounded-lg">
-                                <h3 class="text-lg font-medium text-purple-200 mb-2">Average Answer</h3>
-                                <p class="text-2xl font-bold text-white">{{ stat.average_answer }}</p>
-                            </div>
-                            <div class="bg-white/10 p-4 rounded-lg">
-                                <h3 class="text-lg font-medium text-purple-200 mb-2">Total Responses</h3>
-                                <p class="text-2xl font-bold text-white">{{ stat.total_responses }}</p>
-                            </div>
+                        <div class="stat-grid-4 mb-6">
+                            <StatCard 
+                                title="Most Identified Character" 
+                                :value="getCharacterLabel(stat.most_chosen_character)"
+                            />
+                            <StatCard 
+                                title="Most Common Answer" 
+                                :value="stat.most_common_answer"
+                            />
+                            <StatCard 
+                                title="Average Answer" 
+                                :value="stat.average_answer"
+                            />
+                            <StatCard 
+                                title="Total Responses" 
+                                :value="stat.total_responses"
+                            />
                         </div>
 
                         <div>
-                            <h3 class="text-lg font-medium text-purple-200 mb-2">Responses Distribution (1-10)</h3>
+                            <Typography variant="h4">Responses Distribution (1-10)</Typography>
                             <div v-if="Object.values(stat.response_counts).every(c => c === 0)">
                                 <p class="text-purple-200 text-sm">No responses for this question yet.</p>
                             </div>
@@ -141,5 +139,5 @@ const maxCount = (responses: Record<number, number>) => {
                 </div>
             </Card>
         </div>
-    </div>
+    </PageContainer>
 </template>

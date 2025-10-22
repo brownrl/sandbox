@@ -1,0 +1,196 @@
+/* Custom utility classes for repeated patterns in the survey app */
+
+/* Typography patterns */
+.survey-title {
+    @apply text-4xl font-bold text-white mb-4 text-center;
+}
+
+.survey-subtitle {
+    @apply text-purple-200 text-lg text-center;
+}
+
+.section-title {
+    @apply text-2xl font-semibold text-white mb-6;
+}
+
+.stat-title {
+    @apply text-xl font-semibold text-white mb-4;
+}
+
+.stat-label {
+    @apply text-lg font-medium text-purple-200 mb-2;
+}
+
+.stat-value {
+    @apply text-2xl font-bold text-white;
+}
+
+/* Layout patterns */
+.survey-page-container {
+    @apply min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 py-12 px-4 sm:px-6 lg:px-8;
+}
+
+.survey-content-wrapper {
+    @apply max-w-4xl mx-auto;
+}
+
+.survey-card-section {
+    @apply p-6 bg-white/5 rounded-lg border border-white/10;
+}
+
+.stat-grid-2 {
+    @apply grid grid-cols-1 md:grid-cols-2 gap-6;
+}
+
+.stat-grid-3 {
+    @apply grid grid-cols-1 md:grid-cols-3 gap-6;
+}
+
+.stat-grid-4 {
+    @apply grid grid-cols-1 md:grid-cols-4 gap-6;
+}
+
+/* Button patterns */
+.btn-primary {
+    @apply px-8 py-4 bg-gradient-to-r from-purple-500 to-pink-500 text-white font-semibold rounded-lg shadow-lg hover:from-purple-600 hover:to-pink-600 focus:outline-none focus:ring-4 focus:ring-purple-400/50 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed;
+}
+
+.btn-secondary {
+    @apply px-6 py-3 bg-white/10 border border-white/20 text-white font-semibold rounded-lg hover:bg-white/20 focus:outline-none focus:ring-4 focus:ring-white/20 transition-all duration-200;
+}
+
+.btn-outline {
+    @apply px-6 py-3 bg-transparent border-2 border-purple-400 text-purple-400 font-semibold rounded-lg hover:bg-purple-400 hover:text-white focus:outline-none focus:ring-4 focus:ring-purple-400/50 transition-all duration-200;
+}
+
+/* Form patterns */
+.form-input {
+    @apply w-full px-4 py-3 bg-white/10 border border-white/20 rounded-lg text-white placeholder-purple-300 focus:outline-none focus:ring-2 focus:ring-purple-400 focus:border-transparent;
+}
+
+.form-label {
+    @apply block text-sm font-medium text-purple-200 mb-2;
+}
+
+.form-error {
+    @apply mt-1 text-red-400 text-sm;
+}
+
+/* Character selector patterns */
+.character-grid {
+    @apply grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3;
+}
+
+.character-option {
+    @apply p-4 bg-white/10 border-2 rounded-lg transition-all duration-200 hover:bg-white/20 w-full h-full;
+}
+
+.character-option-selected {
+    @apply border-purple-400 bg-purple-500/20;
+}
+
+.character-option-unselected {
+    @apply border-white/20;
+}
+
+.character-avatar {
+    @apply w-16 h-16 mx-auto mb-3 bg-white/20 rounded-full flex items-center justify-center border border-white/30;
+}
+
+.character-name {
+    @apply font-medium text-white text-sm;
+}
+
+.character-description {
+    @apply text-xs text-purple-300 mt-1;
+}
+
+.character-selected-indicator {
+    @apply absolute top-2 right-2 w-5 h-5 bg-purple-500 rounded-full flex items-center justify-center;
+}
+
+/* Rating scale patterns */
+.rating-grid {
+    @apply grid grid-cols-10 gap-2;
+}
+
+.rating-button {
+    @apply aspect-square flex items-center justify-center rounded-lg border-2 transition-all duration-200 text-sm font-medium;
+}
+
+.rating-button-selected {
+    @apply bg-purple-500 border-purple-400 text-white shadow-lg;
+}
+
+.rating-button-unselected {
+    @apply bg-white/10 border-white/20 text-purple-200 hover:bg-white/20 hover:border-purple-400;
+}
+
+.rating-scale-labels {
+    @apply flex justify-between text-xs text-purple-300 mt-2;
+}
+
+/* Statistics chart patterns */
+.chart-container {
+    @apply flex items-end h-40 space-x-2;
+}
+
+.chart-bar-container {
+    @apply flex-1 flex flex-col items-center;
+}
+
+.chart-bar-background {
+    @apply w-full h-full bg-white/10 rounded-t-md flex items-end;
+}
+
+.chart-bar {
+    @apply w-full bg-gradient-to-t from-purple-500 to-pink-500 rounded-t-md;
+}
+
+.chart-label {
+    @apply text-xs text-purple-300 mt-1;
+}
+
+/* Link patterns */
+.nav-link {
+    @apply text-purple-300 hover:text-purple-100 transition-colors duration-200;
+}
+
+/* Success/Status patterns */
+.success-icon {
+    @apply mx-auto w-24 h-24 bg-green-500/20 rounded-full flex items-center justify-center mb-8;
+}
+
+.success-message {
+    @apply text-4xl font-bold text-white mb-4;
+}
+
+.success-description {
+    @apply text-xl text-purple-200 mb-6;
+}
+
+.success-note {
+    @apply text-purple-300 mb-8;
+}
+
+/* Action button groups */
+.action-button-group {
+    @apply space-y-4 sm:space-y-0 sm:space-x-4 sm:flex sm:justify-center;
+}
+
+.action-button-group>* {
+    @apply inline-block;
+}
+
+/* Quote/Info box patterns */
+.info-box {
+    @apply p-4 bg-white/5 rounded-lg border border-white/10;
+}
+
+.quote-text {
+    @apply text-purple-200 italic;
+}
+
+.quote-author {
+    @apply text-purple-300 text-sm mt-1;
+}
