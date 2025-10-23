@@ -11,6 +11,7 @@ const tiles = ref<Tile[]>([]);
 const moves = ref(0);
 const isWon = ref(false);
 const showFireworks = ref(false);
+const optimalMoves = ref<number | null>(null);
 
 // Initialize the puzzle in solved state
 const initializePuzzle = () => {
@@ -22,6 +23,7 @@ const initializePuzzle = () => {
     moves.value = 0;
     isWon.value = false;
     showFireworks.value = false;
+    optimalMoves.value = null;
 };
 
 // Get the empty position
@@ -74,21 +76,37 @@ const checkWin = () => {
 
 // Scramble the puzzle with solvable configuration
 const scramblePuzzle = () => {
-    // Start with solved state
-    const positions = Array.from({ length: 15 }, (_, i) => i);
+    console.log('Scramble clicked!');
     
-    // Fisher-Yates shuffle
-    for (let i = positions.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [positions[i], positions[j]] = [positions[j], positions[i]];
+    // Start with solved state and do random valid moves to ensure solvability
+    // This also limits difficulty for reasonable calculation times
+    const tempPositions = Array.from({ length: 15 }, (_, i) => i);
+    let tempEmpty = 15;
+    
+    const getValidScrambleMoves = (emptyPos: number): number[] => {
+        const moves: number[] = [];
+        const row = Math.floor(emptyPos / 4);
+        const col = emptyPos % 4;
+        if (row > 0) moves.push(emptyPos - 4);
+        if (row < 3) moves.push(emptyPos + 4);
+        if (col > 0) moves.push(emptyPos - 1);
+        if (col < 3) moves.push(emptyPos + 1);
+        return moves;
+    };
+    
+    // Do 30-50 random valid moves to scramble (reduced for faster solving)
+    const scrambleMoves = 30 + Math.floor(Math.random() * 21);
+    for (let i = 0; i < scrambleMoves; i++) {
+        const validMoves = getValidScrambleMoves(tempEmpty);
+        const randomMove = validMoves[Math.floor(Math.random() * validMoves.length)];
+        const tileIndex = tempPositions.indexOf(randomMove);
+        tempPositions[tileIndex] = tempEmpty;
+        tempEmpty = randomMove;
     }
+    
+    const positions = tempPositions;
 
-    // Check if solvable, if not swap first two tiles
-    if (!isSolvable(positions)) {
-        [positions[0], positions[1]] = [positions[1], positions[0]];
-    }
-
-    // Assign positions to tiles
+    // Assign positions to tiles - THIS SHOULD BE VISIBLE IMMEDIATELY
     tiles.value.forEach((tile, index) => {
         tile.position = positions[index];
     });
@@ -96,6 +114,145 @@ const scramblePuzzle = () => {
     moves.value = 0;
     isWon.value = false;
     showFireworks.value = false;
+    optimalMoves.value = null;
+
+    console.log('Puzzle scrambled, starting A* calculation...');
+    
+    // Calculate optimal solution using A* - run after UI updates
+    setTimeout(() => {
+        try {
+            const result = findOptimalSolution(positions);
+            console.log('A* result:', result);
+            optimalMoves.value = result > 0 ? result : null;
+            console.log('A* complete');
+        } catch (error) {
+            console.error('A* error:', error);
+            optimalMoves.value = null;
+        }
+    }, 100);
+};
+
+// A* algorithm to find optimal solution
+const findOptimalSolution = (positions: number[]): number => {
+    interface State {
+        positions: number[];
+        emptyPos: number;
+        moves: number;
+        heuristic: number;
+    }
+
+    // Manhattan distance heuristic
+    const calculateManhattan = (positions: number[]): number => {
+        let distance = 0;
+        positions.forEach((pos, tileIndex) => {
+            const value = tileIndex + 1; // tile value (1-15)
+            const goalPos = value - 1; // where it should be (0-14)
+            
+            const currentRow = Math.floor(pos / 4);
+            const currentCol = pos % 4;
+            const goalRow = Math.floor(goalPos / 4);
+            const goalCol = goalPos % 4;
+            
+            distance += Math.abs(currentRow - goalRow) + Math.abs(currentCol - goalCol);
+        });
+        return distance;
+    };
+
+    // Convert positions array to string key for visited set
+    const stateKey = (positions: number[], emptyPos: number): string => {
+        return positions.join(',') + '|' + emptyPos;
+    };
+
+    // Get empty position from positions array
+    const getEmptyPos = (positions: number[]): number => {
+        const occupied = new Set(positions);
+        for (let i = 0; i < 16; i++) {
+            if (!occupied.has(i)) return i;
+        }
+        return 15;
+    };
+
+    // Get valid moves from current state
+    const getValidMoves = (emptyPos: number): number[] => {
+        const moves: number[] = [];
+        const row = Math.floor(emptyPos / 4);
+        const col = emptyPos % 4;
+
+        if (row > 0) moves.push(emptyPos - 4); // up
+        if (row < 3) moves.push(emptyPos + 4); // down
+        if (col > 0) moves.push(emptyPos - 1); // left
+        if (col < 3) moves.push(emptyPos + 1); // right
+
+        return moves;
+    };
+
+    // Check if solved
+    const isSolved = (positions: number[]): boolean => {
+        return positions.every((pos, idx) => pos === idx);
+    };
+
+    // Initialize
+    const startEmpty = getEmptyPos(positions);
+    const startHeuristic = calculateManhattan(positions);
+    
+    const openSet: State[] = [{
+        positions: [...positions],
+        emptyPos: startEmpty,
+        moves: 0,
+        heuristic: startHeuristic
+    }];
+
+    const visited = new Set<string>();
+    visited.add(stateKey(positions, startEmpty));
+
+    let iterations = 0;
+    const maxIterations = 50000; // Safety limit - prevent freezing
+    const startTime = Date.now();
+    const maxTime = 5000; // 5 second timeout
+
+    while (openSet.length > 0 && iterations < maxIterations) {
+        iterations++;
+        
+        // Timeout check
+        if (iterations % 1000 === 0 && Date.now() - startTime > maxTime) {
+            console.log('A* timeout after', iterations, 'iterations');
+            return -1;
+        }
+
+        // Get state with lowest f-score (moves + heuristic)
+        openSet.sort((a, b) => (a.moves + a.heuristic) - (b.moves + b.heuristic));
+        const current = openSet.shift()!;
+
+        // Check if solved
+        if (isSolved(current.positions)) {
+            return current.moves;
+        }
+
+        // Try all valid moves
+        const validMoves = getValidMoves(current.emptyPos);
+        
+        for (const tilePos of validMoves) {
+            // Create new state by swapping tile with empty
+            const newPositions = [...current.positions];
+            const tileIndex = newPositions.indexOf(tilePos);
+            newPositions[tileIndex] = current.emptyPos;
+            
+            const key = stateKey(newPositions, tilePos);
+            
+            if (!visited.has(key)) {
+                visited.add(key);
+                openSet.push({
+                    positions: newPositions,
+                    emptyPos: tilePos,
+                    moves: current.moves + 1,
+                    heuristic: calculateManhattan(newPositions)
+                });
+            }
+        }
+    }
+
+    // If we hit the limit, return estimate
+    return -1; // Could not solve within iteration limit
 };
 
 // Check if a configuration is solvable
@@ -124,7 +281,10 @@ const getTileAt = (position: number) => {
 };
 
 onMounted(() => {
+    console.log('Puzzle component mounted!');
+    console.log('Initial tiles:', tiles.value);
     initializePuzzle();
+    console.log('After init tiles:', tiles.value);
 });
 </script>
 
@@ -153,14 +313,23 @@ onMounted(() => {
             <div class="max-w-2xl mx-auto">
                 <!-- Stats and Controls -->
                 <div class="bg-white/80 backdrop-blur-sm rounded-lg shadow-lg p-6 mb-6 border-4 border-red-900">
-                    <div class="flex justify-between items-center mb-4">
+                    <div class="flex justify-between items-center gap-4 mb-4">
                         <div class="text-center flex-1">
-                            <p class="text-sm text-red-700 font-serif mb-1">Moves</p>
+                            <p class="text-sm text-red-700 font-serif mb-1">Your Moves</p>
                             <p class="text-4xl font-bold text-red-900">{{ moves }}</p>
                         </div>
+                        
+                        <div class="text-center flex-1">
+                            <p class="text-sm text-red-700 font-serif mb-1">Best Possible</p>
+                            <p class="text-4xl font-bold text-pink-600">
+                                <span v-if="optimalMoves !== null">{{ optimalMoves }}</span>
+                                <span v-else class="text-2xl text-gray-400">--</span>
+                            </p>
+                        </div>
+
                         <button
                             @click="scramblePuzzle"
-                            class="px-8 py-4 bg-gradient-to-r from-red-600 to-pink-600 text-white rounded-lg font-bold text-lg shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 active:scale-95 font-serif border-2 border-red-800"
+                            class="px-8 py-4 rounded-lg font-bold text-lg shadow-lg transition-all duration-300 font-serif border-2 bg-gradient-to-r from-red-600 to-pink-600 text-white border-red-800 hover:shadow-xl hover:scale-105 active:scale-95"
                         >
                             🎲 Scramble
                         </button>
@@ -173,7 +342,14 @@ onMounted(() => {
                         <p class="text-center text-red-700 mt-2 font-serif">
                             Solved in <span class="font-bold">{{ moves }}</span> moves!
                         </p>
+                        <p v-if="optimalMoves !== null" class="text-center text-red-600 mt-1 font-serif text-sm">
+                            <span v-if="moves === optimalMoves" class="font-bold text-yellow-600">⭐ PERFECT! Optimal solution! ⭐</span>
+                            <span v-else-if="moves <= optimalMoves + 3" class="font-bold text-green-600">🌟 Excellent! (+{{ moves - optimalMoves }})</span>
+                            <span v-else-if="moves <= optimalMoves + 10" class="font-bold text-blue-600">👍 Great job! (+{{ moves - optimalMoves }})</span>
+                            <span v-else class="font-bold">Good effort! (+{{ moves - optimalMoves }})</span>
+                        </p>
                     </div>
+                    
                 </div>
 
                 <!-- Puzzle Grid -->
