@@ -19,6 +19,10 @@ Route::get('ball', function () {
     return Inertia::render('Ball');
 })->name('ball');
 
+Route::get('puzzle', function () {
+    return Inertia::render('Puzzle');
+})->name('puzzle');
+
 Route::get('survey', [App\Http\Controllers\SurveyController::class, 'show'])->name('survey');
 Route::post('survey', [App\Http\Controllers\SurveyController::class, 'store'])->name('survey.store');
 Route::get('survey-success', [App\Http\Controllers\SurveyController::class, 'success'])->name('survey.success');
