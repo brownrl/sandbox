@@ -27,6 +27,10 @@ Route::get('snakedo', function () {
     return Inertia::render('Snakedo');
 })->name('snakedo');
 
+Route::get('a-star', function () {
+    return Inertia::render('AStar');
+})->name('a-star');
+
 Route::get('survey', [App\Http\Controllers\SurveyController::class, 'show'])->name('survey');
 Route::post('survey', [App\Http\Controllers\SurveyController::class, 'store'])->name('survey.store');
 Route::get('survey-success', [App\Http\Controllers\SurveyController::class, 'success'])->name('survey.success');
