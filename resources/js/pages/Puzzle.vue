@@ -114,7 +114,7 @@ const scramblePuzzle = () => {
     moves.value = 0;
     isWon.value = false;
     showFireworks.value = false;
-    optimalMoves.value = null;
+    // Don't set optimalMoves to null - keep previous value to avoid flash
 
     console.log('Puzzle scrambled, starting A* calculation...');
     

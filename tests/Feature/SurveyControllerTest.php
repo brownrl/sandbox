@@ -155,6 +155,31 @@ class SurveyControllerTest extends TestCase
         ]);
     }
 
+    public function test_survey_store_rejects_partially_mismatched_questions(): void
+    {
+        // Set up session questions
+        $sessionQuestions = SurveyQuestion::limit(5)->get();
+        session(['survey_questions' => $sessionQuestions]);
+
+        $character = StarWarsCharacter::first();
+
+        $invalidData = [
+            'first_name' => fake()->firstName(),
+            'character' => $character->slug,
+            'questions' => $sessionQuestions->pluck('id')->take(3)->toArray(),
+            'responses' => [1, 2, 3],
+        ];
+
+        $response = $this->post(route('survey.store'), $invalidData);
+
+        $response->assertRedirect();
+        $response->assertSessionHasErrors(['questions']);
+
+        $this->assertDatabaseMissing('survey_responses', [
+            'first_name' => $invalidData['first_name'],
+        ]);
+    }
+
     public function test_survey_store_validates_response_range(): void
     {
         $questions = SurveyQuestion::limit(5)->get();
@@ -322,15 +347,16 @@ class SurveyControllerTest extends TestCase
 
     public function test_character_statistics_handles_missing_questions_gracefully(): void
     {
-        $validQuestion = SurveyQuestion::factory()->create();
-        $invalidQuestionId = 999; // Non-existent question ID
+        $question = SurveyQuestion::factory()->create();
         $character = StarWarsCharacter::first();
 
         SurveyResponse::factory()->create([
             'character' => $character->slug,
-            'questions' => [$validQuestion->id, $invalidQuestionId],
-            'responses' => [8, 7],
+            'questions' => [$question->id],
+            'responses' => [8],
         ]);
+
+        $question->delete();
 
         $response = $this->get(route('character_statistics'));
 
@@ -338,8 +364,7 @@ class SurveyControllerTest extends TestCase
         $response->assertInertia(fn (Assert $page) => $page
             ->component('Survey/CharacterStatistics')
             ->has('statistics')
-            ->has("statistics.{$validQuestion->id}")
-            ->missing("statistics.{$invalidQuestionId}")
+            ->missing("statistics.{$question->id}")
         );
     }
 
