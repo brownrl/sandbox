@@ -117,14 +117,13 @@ class SurveyController extends Controller
             $total_responses = array_sum($stat['response_counts']);
             $stat['total_responses'] = $total_responses;
 
+            $stat['average_answer'] = 0;
             if ($total_responses > 0) {
                 $weighted_sum = 0;
                 foreach ($stat['response_counts'] as $rating => $count) {
                     $weighted_sum += $rating * $count;
                 }
                 $stat['average_answer'] = round($weighted_sum / $total_responses, 1);
-            } else {
-                $stat['average_answer'] = 0;
             }
         }
 
@@ -184,14 +183,13 @@ class SurveyController extends Controller
             $total_responses = array_sum($stat['response_counts']);
             $stat['total_responses'] = $total_responses;
 
+            $stat['average_answer'] = 0;
             if ($total_responses > 0) {
                 $weighted_sum = 0;
                 foreach ($stat['response_counts'] as $rating => $count) {
                     $weighted_sum += $rating * $count;
                 }
                 $stat['average_answer'] = round($weighted_sum / $total_responses, 1);
-            } else {
-                $stat['average_answer'] = 0;
             }
         }
 
