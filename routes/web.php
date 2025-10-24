@@ -44,5 +44,13 @@ Route::get('survey/reset', function () {
     return redirect()->route('survey')->with('message', 'Survey questions reset');
 });
 
+
+Route::get('jokes', function () {
+    $joke = App\Models\OmarJoke::inRandomOrder()->first();
+    return Inertia::render('Jokes', [
+        'joke' => $joke ? $joke->joke : 'No jokes found, sorry!',
+    ]);
+})->name('jokes');
+
 require __DIR__.'/settings.php';
 require __DIR__.'/auth.php';

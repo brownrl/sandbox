@@ -17,11 +17,14 @@ class DatabaseSeeder extends Seeder
             StarWarsCharacterSeeder::class,
             SurveyQuestionSeeder::class,
             SurveyResponseSeeder::class,
+            OmarJokeSeeder::class,
         ]);
 
-        User::factory()->create([
-            'name' => 'Test User',
+        User::firstOrCreate([
             'email' => 'test@example.com',
+        ], [
+            'name' => 'Test User',
+            'password' => bcrypt('password'),
         ]);
     }
 }

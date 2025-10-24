@@ -1,0 +1,123 @@
+<?php
+
+namespace Database\Seeders;
+
+use App\Models\OmarJoke;
+use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+use Illuminate\Database\Seeder;
+
+class OmarJokeSeeder extends Seeder
+{
+    /**
+     * Run the database seeds.
+     */
+    public function run(): void
+    {
+        $jokes = [
+            "Why don't scientists trust atoms? Because they make up everything!",
+            "What do you call a fish with no eyes? Fsh!",
+            "Why did the scarecrow win an award? Because he was outstanding in his field!",
+            "What do you call a fake noodle? An impasta!",
+            "Why did the bicycle fall over? Because it was two-tired!",
+            "I'm reading a book about anti-gravity. It's impossible to put down!",
+            "What do you call a lazy kangaroo? Pouch potato!",
+            "How do you organize a space party? You planet!",
+            "What's orange and sounds like a parrot? A carrot!",
+            "Why can't you hear a Pterodactyl go to the bathroom? Because the \"P\" is silent!",
+            "What do you call a sad strawberry? A blueberry!",
+            "Why did the coffee file a police report? It got mugged!",
+            "How does a penguin build its house? Igloos it together!",
+            "What do you call cheese that isn't yours? Nacho cheese!",
+            "Why did the math book look sad? Because it had too many problems!",
+            "What's a vampire's favorite fruit? A neck-tarine!",
+            "Why don't skeletons fight each other? They don't have the guts!",
+            "What do you call a boomerang that won't come back? A stick!",
+            "What's the best thing about Switzerland? I don't know, but the flag is a big plus!",
+            "Why did the man fall into the well? Because he couldn't see that well!",
+            "What do you call a bear with no teeth? A gummy bear!",
+            "How do you make a tissue dance? You put a little boogie in it!",
+            "What do you call a factory that makes good products? A satisfactory!",
+            "Why did the invisible man turn down the job offer? He couldn't see himself doing it!",
+            "What's a foot long and smells like a shoe? A foot!",
+            "What do you call a sleeping bull? A bulldozer!",
+            "Why did the golfer bring two pairs of pants? In case he got a hole in one!",
+            "What do you call a pile of cats? A meow-ntain!",
+            "What do you call a sad coffee? Depresso!",
+            "Why did the tomato turn red? Because it saw the salad dressing!",
+            "What's a tree's favorite drink? Root beer!",
+            "Why don't eggs tell jokes? Because they'd crack each other up!",
+            "What do you call a can opener that doesn't work? A can't opener!",
+            "What's a ghost's favorite fruit? Boo-nanas!",
+            "Why did the cookie go to the hospital? Because it felt crummy!",
+            "What do you call a belt made out of watches? A waist of time!",
+            "Why did the student eat his homework? Because the teacher told him it was a piece of cake!",
+            "What do you call a fish wearing a bowtie? Sophisti-cat-ed!",
+            "What's a tornado's favorite game? Twister!",
+            "Why did the stadium get hot after the game? All the fans left!",
+            "What do you call a lazy dog? A couch potato!",
+            "Why did the picture go to jail? Because it was framed!",
+            "What do you call a pig that does karate? A pork chop!",
+            "Why did the invisible man turn down the job offer? He couldn't see himself doing it!",
+            "What do you call a boomerang that won't come back? A stick!",
+            "What's the best thing about Switzerland? I don't know, but the flag is a big plus!",
+            "Why did the man fall into the well? Because he couldn't see that well!",
+            "What do you call a bear with no teeth? A gummy bear!",
+            "How do you make a tissue dance? You put a little boogie in it!",
+            "What do you call a factory that makes good products? A satisfactory!",
+            "Why did the invisible man turn down the job offer? He couldn't see himself doing it!",
+            "What's a foot long and smells like a shoe? A foot!",
+            "What do you call a sleeping bull? A bulldozer!",
+            "Why did the golfer bring two pairs of pants? In case he got a hole in one!",
+            "What do you call a pile of cats? A meow-ntain!",
+            "What do you call a sad coffee? Depresso!",
+            "Why did the tomato turn red? Because it saw the salad dressing!",
+            "What's a tree's favorite drink? Root beer!",
+            "Why don't eggs tell jokes? Because they'd crack each other up!",
+            "What do you call a can opener that doesn't work? A can't opener!",
+            "What's a ghost's favorite fruit? Boo-nanas!",
+            "Why did the cookie go to the hospital? Because it felt crummy!",
+            "What do you call a belt made out of watches? A waist of time!",
+            "Why did the student eat his homework? Because the teacher told him it was a piece of cake!",
+            "What do you call a fish wearing a bowtie? Sophisti-cat-ed!",
+            "What's a tornado's favorite game? Twister!",
+            "Why did the stadium get hot after the game? All the fans left!",
+            "What do you call a lazy dog? A couch potato!",
+            "Why did the picture go to jail? Because it was framed!",
+            "What do you call a pig that does karate? A pork chop!",
+            "What do you call a snowman with a six-pack? An abdominal snowman!",
+            "Why did the invisible man turn down the job offer? He couldn't see himself doing it!",
+            "What do you call a boomerang that won't come back? A stick!",
+            "What's the best thing about Switzerland? I don't know, but the flag is a big plus!",
+            "Why did the man fall into the well? Because he couldn't see that well!",
+            "What do you call a bear with no teeth? A gummy bear!",
+            "How do you make a tissue dance? You put a little boogie in it!",
+            "What do you call a factory that makes good products? A satisfactory!",
+            "Why did the invisible man turn down the job offer? He couldn't see himself doing it!",
+            "What's a foot long and smells like a shoe? A foot!",
+            "What do you call a sleeping bull? A bulldozer!",
+            "Why did the golfer bring two pairs of pants? In case he got a hole in one!",
+            "What do you call a pile of cats? A meow-ntain!",
+            "What do you call a sad coffee? Depresso!",
+            "Why did the tomato turn red? Because it saw the salad dressing!",
+            "What's a tree's favorite drink? Root beer!",
+            "Why don't eggs tell jokes? Because they'd crack each other up!",
+            "What do you call a can opener that doesn't work? A can't opener!",
+            "What's a ghost's favorite fruit? Boo-nanas!",
+            "Why did the cookie go to the hospital? Because it felt crummy!",
+            "What do you call a belt made out of watches? A waist of time!",
+            "Why did the student eat his homework? Because the teacher told him it was a piece of cake!",
+            "What do you call a fish wearing a bowtie? Sophisti-cat-ed!",
+            "What's a tornado's favorite game? Twister!",
+            "Why did the stadium get hot after the game? All the fans left!",
+            "What do you call a lazy dog? A couch potato!",
+            "Why did the picture go to jail? Because it was framed!",
+            "What do you call a pig that does karate? A pork chop!",
+            "What do you call a snowman with a six-pack? An abdominal snowman!",
+            "I told my wife she was drawing her eyebrows too high. She looked surprised.",
+        ];
+
+        foreach ($jokes as $joke) {
+            OmarJoke::create(['joke' => $joke]);
+        }
+    }
+}
