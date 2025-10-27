@@ -198,10 +198,13 @@ class SurveyController extends Controller
             ->orderBy('name')
             ->get();
 
+        $totalSurveys = $character ? $responses->count() : 0;
+
         return Inertia::render('Survey/CharacterStatistics', [
             'statistics' => $statistics,
             'character' => $character,
             'characters' => $characters,
+            'totalSurveys' => $totalSurveys,
         ]);
     }
 
