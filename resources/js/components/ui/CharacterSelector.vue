@@ -52,11 +52,23 @@ const updateValue = (value: string) => {
               : 'border-white/20'
           ]"
         >
-          <!-- Image Placeholder -->
-          <div class="w-16 h-16 mx-auto mb-3 bg-white/20 rounded-full flex items-center justify-center border border-white/30">
-            <svg class="w-8 h-8 text-purple-300" fill="currentColor" viewBox="0 0 20 20">
-              <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd" />
-            </svg>
+          <!-- Character Image -->
+          <div class="w-16 h-16 mx-auto mb-3 rounded-full overflow-hidden border border-white/30">
+            <img
+              :src="`/storage/sw/${character.value}-opt.jpg`"
+              :alt="character.label"
+              class="w-full h-full object-cover"
+              @error="(e) => {
+                const target = e.target as HTMLImageElement;
+                target.style.display = 'none';
+                (target.nextElementSibling as HTMLElement).style.display = 'flex';
+              }"
+            />
+            <div class="w-full h-full bg-white/20 items-center justify-center border border-white/30" style="display: none;">
+              <svg class="w-8 h-8 text-purple-300" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd" />
+              </svg>
+            </div>
           </div>
           
           <!-- Character Name -->
