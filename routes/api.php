@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\OmarJoke;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -16,3 +17,9 @@ use Illuminate\Support\Facades\Route;
 
 // Route for getting Star Wars characters
 Route::get('/characters', [App\Http\Controllers\SurveyController::class, 'getCharacters'])->name('api.characters');
+
+Route::get('/joke', function (Request $request) {
+    return response()->json([
+        'joke' => OmarJoke::inRandomOrder()->first()->joke,
+    ]);
+})->name('api.joke');

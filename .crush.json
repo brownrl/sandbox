@@ -1,0 +1,30 @@
+{
+  "$schema": "https://charm.land/crush.json",
+  "mcp": {
+    "boost": {
+      "type": "stdio",
+      "command": "php",
+      "args": [
+        "artisan",
+        "boost:mcp"
+      ],
+      "timeout": 120,
+      "disabled": false,
+      "env": {
+        
+      }
+    },
+     "herd": {
+      "type": "stdio",
+      "command": "php",
+      "args": [
+        "/Applications/Herd.app/Contents/Resources/herd-mcp.phar"
+      ],
+      "timeout": 60,
+      "disabled": false,
+      "env": {
+        "SITE_PATH": "/Users/brownrl/Herd/sandbox"
+      }
+    }
+  }
+}
