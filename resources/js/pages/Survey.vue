@@ -8,6 +8,8 @@ import CharacterSelector from '@/components/ui/CharacterSelector.vue';
 import RatingScale from '@/components/ui/RatingScale.vue';
 import AppButton from '@/components/ui/AppButton.vue';
 import Typography from '@/components/ui/Typography.vue';
+import StarWarsThemeSwitcher from '@/components/ui/StarWarsThemeSwitcher.vue';
+import { useStarWarsTheme } from '@/composables/useStarWarsTheme';
 
 interface Question {
     id: number;
@@ -26,6 +28,8 @@ interface Props {
 }
 
 const props = defineProps<Props>();
+
+const { theme, isLightSide } = useStarWarsTheme();
 
 const form = ref({
     first_name: '',
@@ -107,9 +111,15 @@ const submitForm = () => {
 <template>
     <Head title="Star Wars Survey - Sandbox" />
     
-    <PageContainer class="survey-page-container">
-        <div class="max-w-4xl mx-auto">
-            <Card class="survey-card-section">
+    <div :class="{ 'light-side': isLightSide() }">
+        <PageContainer class="survey-page-container">
+            <!-- Theme Switcher -->
+            <div class="fixed top-4 right-4 z-50">
+                <StarWarsThemeSwitcher />
+            </div>
+
+            <div class="max-w-4xl mx-auto">
+                <Card class="survey-card-section">
                 <!-- Header -->
                 <PageHeader 
                     title="Star Wars Survey" 
@@ -190,8 +200,6 @@ const submitForm = () => {
                             type="submit"
                             :disabled="processing"
                             :loading="processing"
-                            variant="primary"
-                            size="lg"
                             class="btn-primary"
                         >
                             <span v-if="processing">Submitting...</span>
@@ -202,4 +210,5 @@ const submitForm = () => {
             </Card>
         </div>
     </PageContainer>
+    </div>
 </template>

@@ -5,13 +5,23 @@ import Card from '@/components/ui/Card.vue';
 import PageContainer from '@/components/ui/PageContainer.vue';
 import AppButton from '@/components/ui/AppButton.vue';
 import Typography from '@/components/ui/Typography.vue';
+import StarWarsThemeSwitcher from '@/components/ui/StarWarsThemeSwitcher.vue';
+import { useStarWarsTheme } from '@/composables/useStarWarsTheme';
+
+const { theme, isLightSide } = useStarWarsTheme();
 </script>
 
 <template>
     <Head title="Survey Success - Sandbox" />
     
-    <PageContainer class="survey-page-container flex items-center justify-center">
-        <div class="max-w-2xl mx-auto text-center">
+    <div :class="{ 'light-side': isLightSide() }">
+        <PageContainer class="survey-page-container flex items-center justify-center">
+            <!-- Theme Switcher -->
+            <div class="fixed top-4 right-4 z-50">
+                <StarWarsThemeSwitcher />
+            </div>
+
+            <div class="max-w-2xl mx-auto text-center">
             <Card class="survey-card-section">
                 <!-- Success Icon -->
                 <div class="success-icon bg-red-900/30 border-4 border-red-700">
@@ -72,4 +82,5 @@ import Typography from '@/components/ui/Typography.vue';
             </Card>
         </div>
     </PageContainer>
+    </div>
 </template>

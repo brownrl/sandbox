@@ -1,6 +1,6 @@
 /* Custom utility classes for repeated patterns in the survey app */
 
-/* Typography patterns */
+/* Typography patterns - Dark Side (default) */
 .survey-title {
     @apply text-4xl font-bold text-red-600 mb-4 text-center;
 }
@@ -25,7 +25,7 @@
     @apply text-2xl font-bold text-red-600;
 }
 
-/* Layout patterns */
+/* Layout patterns - Dark Side (default) */
 .survey-page-container {
     @apply min-h-screen bg-gradient-to-br from-black via-gray-900 to-black py-12 px-4 sm:px-6 lg:px-8;
 }
@@ -38,16 +38,18 @@
     @apply p-6 bg-black/50 rounded-lg border border-red-900 shadow-lg;
 }
 
-.stat-grid-2 {
-    @apply grid grid-cols-1 md:grid-cols-2 gap-6;
+/* Light Side Theme */
+.light-side .survey-page-container {
+    @apply bg-gradient-to-br from-blue-50 via-cyan-50 to-blue-100;
 }
 
-.stat-grid-3 {
-    @apply grid grid-cols-1 md:grid-cols-3 gap-6;
+.light-side .survey-title {
+    @apply text-blue-600;
+    animation: none;
 }
 
-.stat-grid-4 {
-    @apply grid grid-cols-1 md:grid-cols-4 gap-6;
+.light-side .survey-subtitle {
+    @apply text-blue-800;
 }
 
 /* Button patterns */
@@ -63,19 +65,19 @@
     @apply px-6 py-3 bg-transparent border-2 border-purple-400 text-purple-400 font-semibold rounded-lg hover:bg-purple-400 hover:text-white focus:outline-none focus:ring-4 focus:ring-purple-400/50 transition-all duration-200;
 }
 
+/* Light Side Button Styles */
+.light-side .btn-primary {
+    @apply bg-gradient-to-r from-blue-500 to-cyan-400 hover:from-blue-600 hover:to-cyan-500 focus:ring-blue-400/50;
+}
+
+.light-side .btn-secondary {
+    @apply bg-blue-50 border-blue-300 text-blue-900 hover:bg-blue-100 focus:ring-blue-400/50;
+}
+
 /* Form patterns */
 .form-input {
     @apply w-full px-4 py-3 bg-white/10 border border-white/20 rounded-lg text-white placeholder-purple-300 focus:outline-none focus:ring-2 focus:ring-purple-400 focus:border-transparent;
 }
-
-.form-label {
-    @apply block text-sm font-medium text-purple-200 mb-2;
-}
-
-.form-error {
-    @apply mt-1 text-red-400 text-sm;
-}
-
 /* Character selector patterns */
 .character-grid {
     @apply grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3;
@@ -102,6 +104,118 @@
 }
 
 .character-description {
+    @apply text-xs text-purple-300 mt-1;
+}
+
+.character-selected-indicator {
+    @apply absolute top-2 right-2 w-5 h-5 bg-purple-500 rounded-full flex items-center justify-center;
+}
+
+/* Light Side Character Selector Styles */
+.light-side .character-option {
+    @apply bg-blue-50 hover:bg-blue-100;
+}
+
+.light-side .character-option-selected {
+    @apply border-blue-500 bg-blue-200;
+}
+
+.light-side .character-option-unselected {
+    @apply border-blue-300;
+}
+
+.light-side .character-avatar {
+    @apply bg-blue-100 border-blue-300;
+}
+
+.light-side .character-name {
+    @apply text-blue-900;
+}
+
+.light-side .character-description {
+    @apply text-blue-700;
+}
+
+.light-side .character-selected-indicator {
+    @apply bg-blue-500;
+}
+
+/* Rating scale patterns */
+.rating-grid {
+    @apply grid grid-cols-10 gap-2;
+}
+
+.rating-button {
+    @apply aspect-square flex items-center justify-center rounded-lg border-2 transition-all duration-200 text-sm font-medium;
+}
+
+.rating-button-selected {
+    @apply bg-red-700 border-red-600 text-white shadow-lg;
+}
+
+.rating-button-unselected {
+    @apply bg-black/50 border-gray-700 text-gray-400 hover:bg-black hover:border-red-600;
+}
+
+.rating-scale-labels {
+    @apply flex justify-between text-xs text-purple-300 mt-2;
+}
+
+/* Light Side Rating Styles */
+.light-side .rating-button-selected {
+    @apply bg-blue-500 border-blue-600 text-white;
+}
+
+.light-side .rating-button-unselected {
+    @apply bg-blue-50 border-blue-300 text-blue-900 hover:bg-blue-100 hover:border-blue-500;
+}
+
+.light-side .rating-scale-labels {
+    @apply text-blue-700;
+}
+
+/* Statistics chart patterns */
+.chart-container {
+    @apply flex items-end h-40 space-x-2;
+}
+
+.chart-bar-container {
+    @apply flex-1 flex flex-col items-center;
+}
+
+.chart-bar-background {
+    @apply w-full h-full bg-white/10 rounded-t-md flex items-end;
+}
+
+.chart-bar {
+    @apply w-full bg-gradient-to-t from-red-700 to-black rounded-t-md;
+}
+
+.chart-label {
+    @apply text-xs text-red-500 mt-1;
+}
+
+/* Light Side Chart Styles */
+.light-side .chart-bar-background {
+    @apply bg-blue-100;
+}
+
+.light-side .chart-bar {
+    @apply bg-gradient-to-t from-blue-500 to-cyan-400;
+}
+
+.light-side .chart-label {
+    @apply text-blue-700;
+}
+
+/* Link patterns */
+.nav-link {
+    @apply text-purple-300 hover:text-purple-100 transition-colors duration-200;
+}
+
+.light-side .nav-link {
+    @apply text-blue-600 hover:text-blue-800;
+}character-description {
     @apply text-xs text-purple-300 mt-1;
 }
 

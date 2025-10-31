@@ -8,6 +8,8 @@ import PageHeader from '@/components/ui/PageHeader.vue';
 import CharacterSelector from '@/components/ui/CharacterSelector.vue';
 import StatCard from '@/components/ui/StatCard.vue';
 import Typography from '@/components/ui/Typography.vue';
+import StarWarsThemeSwitcher from '@/components/ui/StarWarsThemeSwitcher.vue';
+import { useStarWarsTheme } from '@/composables/useStarWarsTheme';
 
 interface CharacterOption {
     value: string;
@@ -31,6 +33,8 @@ interface Props {
 }
 
 const props = defineProps<Props>();
+
+const { theme, isLightSide } = useStarWarsTheme();
 
 const selectedCharacter = ref(props.character);
 
@@ -66,8 +70,14 @@ const maxCount = (responses: Record<number, number>) => {
 <template>
     <Head title="Character Statistics - Sandbox" />
 
-    <PageContainer class="survey-page-container">
-        <div class="survey-content-wrapper">
+    <div :class="{ 'light-side': isLightSide() }">
+        <PageContainer class="survey-page-container">
+            <!-- Theme Switcher -->
+            <div class="fixed top-4 right-4 z-50">
+                <StarWarsThemeSwitcher />
+            </div>
+
+            <div class="survey-content-wrapper">
             <Card class="survey-card-section">
                 <PageHeader 
                     title="Character Statistics" 
@@ -186,4 +196,5 @@ const maxCount = (responses: Record<number, number>) => {
             </Card>
         </div>
     </PageContainer>
+    </div>
 </template>
