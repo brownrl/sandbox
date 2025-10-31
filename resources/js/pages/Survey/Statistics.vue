@@ -52,13 +52,14 @@ const maxCount = (responses: Record<number, number>) => {
 <template>
     <Head title="Survey Statistics - Sandbox" />
 
-    <PageContainer>
+    <PageContainer class="survey-page-container">
         <div class="survey-content-wrapper">
-            <Card>
+            <Card class="survey-card-section">
                 <PageHeader 
                     title="Survey Statistics" 
                     emoji="📊"
                     subtitle="Insights from the Star Wars survey."
+                    class="survey-title"
                 >
                     <template #additional>
                         <div class="mt-4">
@@ -72,28 +73,30 @@ const maxCount = (responses: Record<number, number>) => {
                     </template>
                 </PageHeader>
 
-                <div v-if="Object.keys(statistics).length === 0" class="text-center text-white">
+                <div v-if="Object.keys(statistics).length === 0" class="text-center text-red-500">
                     <p>No survey data available yet. Be the first to submit a response!</p>
                 </div>
 
                 <div v-else class="space-y-8">
 
-                    <Typography variant="h2">Global Statistics</Typography>
+                    <Typography variant="h2" class="section-title">Global Statistics</Typography>
                     
                     <div class="survey-card-section">
                         <div class="stat-grid-2 mb-6">
                             <StatCard 
                                 title="Total Responses" 
                                 :value="global_statistics.total_responses"
+                                class="stat-value"
                             />
                             <StatCard 
                                 title="Most Popular Character Overall" 
                                 :value="getCharacterLabel(global_statistics.most_popular_character_overall)"
+                                class="stat-value"
                             />
                         </div>
                     </div>
 
-                    <Typography variant="h2">Individual Question Statistics</Typography>
+                    <Typography variant="h2" class="section-title">Individual Question Statistics</Typography>
 
 
                     <div v-for="(stat, questionId) in statistics" :key="questionId" class="survey-card-section">
@@ -103,35 +106,39 @@ const maxCount = (responses: Record<number, number>) => {
                             <StatCard 
                                 title="Most Identified Character" 
                                 :value="getCharacterLabel(stat.most_chosen_character)"
+                                class="stat-value"
                             />
                             <StatCard 
                                 title="Most Common Answer" 
                                 :value="stat.most_common_answer"
+                                class="stat-value"
                             />
                             <StatCard 
                                 title="Average Answer" 
                                 :value="stat.average_answer"
+                                class="stat-value"
                             />
                             <StatCard 
                                 title="Total Responses" 
                                 :value="stat.total_responses"
+                                class="stat-value"
                             />
                         </div>
 
                         <div>
                             <Typography variant="h4">Responses Distribution (1-10)</Typography>
                             <div v-if="Object.values(stat.response_counts).every(c => c === 0)">
-                                <p class="text-purple-200 text-sm">No responses for this question yet.</p>
+                                <p class="text-red-500 text-sm">No responses for this question yet.</p>
                             </div>
-                            <div v-else class="flex items-end h-40 space-x-2">
-                                <div v-for="rating in 10" :key="rating" class="flex-1 flex flex-col items-center">
-                                    <div class="w-full h-full bg-white/10 rounded-t-md flex items-end">
+                            <div v-else class="chart-container">
+                                <div v-for="rating in 10" :key="rating" class="chart-bar-container">
+                                    <div class="chart-bar-background">
                                         <div 
-                                            class="w-full bg-gradient-to-t from-purple-500 to-pink-500 rounded-t-md"
+                                            class="chart-bar"
                                             :style="{ height: (stat.response_counts[rating] / maxCount(stat.response_counts)) * 120 + 'px' }"
                                         ></div>
                                     </div>
-                                    <span class="text-xs text-purple-300 mt-1">{{ rating }}</span>
+                                    <span class="chart-label">{{ rating }}</span>
                                 </div>
                             </div>
                         </div>

@@ -107,17 +107,18 @@ const submitForm = () => {
 <template>
     <Head title="Star Wars Survey - Sandbox" />
     
-    <PageContainer>
+    <PageContainer class="survey-page-container">
         <div class="max-w-4xl mx-auto">
-            <Card>
+            <Card class="survey-card-section">
                 <!-- Header -->
                 <PageHeader 
                     title="Star Wars Survey" 
-                    emoji="🌟"
+                    emoji="✨"
                     subtitle="Choose your Star Wars character and share your thoughts on some whimsical topics!"
+                    class="survey-title"
                 >
                     <template #additional>
-                        <p class="text-purple-300 text-sm mt-2">
+                        <p class="survey-subtitle">
                             Rate each statement from 1 (strongly disagree) to 10 (strongly agree)
                         </p>
                     </template>
@@ -127,7 +128,7 @@ const submitForm = () => {
                 <form @submit.prevent="submitForm">
                     <!-- Personal Information -->
                     <div class="mb-8 survey-card-section">
-                        <Typography variant="h2">About You</Typography>
+                        <Typography variant="h2" class="section-title">About You</Typography>
                         
                         <div class="space-y-6">
                             <!-- First Name -->
@@ -165,7 +166,7 @@ const submitForm = () => {
 
                     <!-- Survey Questions -->
                     <div class="mb-8">
-                        <Typography variant="h2" class="mb-6">Survey Questions</Typography>
+                        <Typography variant="h2" class="section-title">Survey Questions</Typography>
                         
                         <div class="space-y-6">
                             <RatingScale
@@ -191,6 +192,7 @@ const submitForm = () => {
                             :loading="processing"
                             variant="primary"
                             size="lg"
+                            class="btn-primary"
                         >
                             <span v-if="processing">Submitting...</span>
                             <span v-else>Submit Survey</span>
