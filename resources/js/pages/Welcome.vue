@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { dashboard, login, register, clock, survey, ball, puzzle, snakedo, jokes, aStar, leBall } from '@/routes';
 import { Head, Link } from '@inertiajs/vue3';
+import DoNotPressButton from '@/components/DoNotPressButton.vue';
 
 interface ToyItem {
     route: string;
@@ -181,6 +182,7 @@ const toys: ToyItem[] = [
                         </div>
                     </div>
                 </Link>
+                <DoNotPressButton />
             </div>
 
             <!-- Footer Lab Notes -->
