@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, watch } from 'vue';
+import { ref, watch, onMounted, onUnmounted, nextTick } from 'vue';
 import { Head, router, Link } from '@inertiajs/vue3';
 import { survey_statistics } from '@/routes';
 import Card from '@/components/ui/Card.vue';
@@ -37,6 +37,8 @@ const props = defineProps<Props>();
 const { theme, isLightSide } = useStarWarsTheme();
 
 const selectedCharacter = ref(props.character);
+const characterInfoRef = ref<HTMLElement | null>(null);
+const showScrollToTop = ref(false);
 
 // Helper function to get character label from slug
 const getCharacterLabel = (slug: string): string => {
@@ -54,8 +56,32 @@ watch(selectedCharacter, (newCharacter) => {
     router.visit('/character-statistics', {
         data: { character: newCharacter },
         preserveState: true,
-        preserveScroll: true,
+        preserveScroll: false,
+        onSuccess: () => {
+            nextTick(() => {
+                if (characterInfoRef.value) {
+                    characterInfoRef.value.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+            });
+        }
     });
+});
+
+const handleScroll = () => {
+    showScrollToTop.value = window.scrollY > 300;
+};
+
+const scrollToTop = () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+};
+
+onMounted(() => {
+    window.addEventListener('scroll', handleScroll);
+    handleScroll();
+});
+
+onUnmounted(() => {
+    window.removeEventListener('scroll', handleScroll);
 });
 
 const maxCount = (responses: Record<number, number>) => {
@@ -116,7 +142,7 @@ const maxCount = (responses: Record<number, number>) => {
 
                 <div v-else class="space-y-8">
                     <!-- Character Info Card -->
-                    <div class="survey-card-section bg-gradient-to-br from-black to-gray-900 border border-red-900 rounded-lg p-6">
+                    <div ref="characterInfoRef" class="survey-card-section bg-gradient-to-br from-black to-gray-900 border border-red-900 rounded-lg p-6">
                         <div class="flex items-center gap-6">
                             <div class="w-24 h-24 rounded-full overflow-hidden border-4 border-red-700 shrink-0">
                                 <img
@@ -175,15 +201,35 @@ const maxCount = (responses: Record<number, number>) => {
                         </div>
 
                         <div>
-                            <Typography variant="h4">Responses Distribution (1-10)</Typography>
+                            <div class="flex items-center justify-between mb-2">
+                                <Typography variant="h4">Responses Distribution (1-10)</Typography>
+                                <div class="flex items-center gap-2 text-sm">
+                                    <span class="text-gray-400">Average:</span>
+                                    <span class="text-purple-400 font-semibold">{{ stat.average_answer }}</span>
+                                    <div class="w-3 h-3 bg-purple-500 rounded-full"></div>
+                                </div>
+                            </div>
                             <div v-if="Object.values(stat.response_counts).every(c => c === 0)">
                                 <p class="text-red-500 text-sm">No responses for this question yet.</p>
                             </div>
-                            <div v-else class="chart-container">
+                            <div v-else class="chart-container relative">
+                                <!-- Average line indicator -->
+                                <div 
+                                    class="absolute top-0 bottom-8 w-0.5 bg-purple-500 z-10"
+                                    :style="{ left: `calc(${((stat.average_answer - 0.5) / 10) * 100}% - 1px)` }"
+                                >
+                                    <div class="absolute -top-6 left-1/2 -translate-x-1/2 whitespace-nowrap">
+                                        <div class="bg-purple-500 text-white text-xs px-2 py-1 rounded">
+                                            Avg: {{ stat.average_answer }}
+                                        </div>
+                                    </div>
+                                </div>
+                                
                                 <div v-for="rating in 10" :key="rating" class="chart-bar-container">
                                     <div class="chart-bar-background">
                                         <div 
                                             class="chart-bar"
+                                            :class="{ 'bg-purple-600': Math.abs(rating - stat.average_answer) < 0.5 }"
                                             :style="{ height: (stat.response_counts[rating] / maxCount(stat.response_counts)) * 120 + 'px' }"
                                         ></div>
                                     </div>
@@ -195,6 +241,27 @@ const maxCount = (responses: Record<number, number>) => {
                 </div>
             </Card>
         </div>
+
+        <!-- Floating Scroll to Top Button -->
+        <Transition
+            enter-active-class="transition duration-300 ease-out"
+            enter-from-class="opacity-0 scale-90"
+            enter-to-class="opacity-100 scale-100"
+            leave-active-class="transition duration-200 ease-in"
+            leave-from-class="opacity-100 scale-100"
+            leave-to-class="opacity-0 scale-90"
+        >
+            <button
+                v-if="showScrollToTop"
+                @click="scrollToTop"
+                class="fixed bottom-8 right-8 z-50 px-6 py-3 bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 text-white font-semibold rounded-full shadow-lg hover:shadow-xl transition-all duration-200 flex items-center gap-2"
+            >
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18" />
+                </svg>
+                Choose New Character
+            </button>
+        </Transition>
     </PageContainer>
     </div>
 </template>

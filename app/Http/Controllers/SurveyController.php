@@ -16,7 +16,7 @@ class SurveyController extends Controller
     public function show(): Response
     {
         // Check if we already have questions in session
-        if (! session()->has('survey_questions')) {
+        if (!session()->has('survey_questions')) {
             // Get 5 random questions from the pool of 20 and store in session
             $questions = SurveyQuestion::where('is_active', true)
                 ->inRandomOrder()
@@ -47,8 +47,10 @@ class SurveyController extends Controller
         $sessionQuestions = session('survey_questions');
         $sessionQuestionIds = $sessionQuestions->pluck('id')->toArray();
 
-        if (array_diff($validated['questions'], $sessionQuestionIds) ||
-            array_diff($sessionQuestionIds, $validated['questions'])) {
+        if (
+            array_diff($validated['questions'], $sessionQuestionIds) ||
+            array_diff($sessionQuestionIds, $validated['questions'])
+        ) {
             return redirect()->back()->withErrors(['questions' => 'Invalid questions submitted.']);
         }
 
@@ -85,14 +87,18 @@ class SurveyController extends Controller
         }
 
         $global_statistics = [];
-        $global_statistics['total_responses'] = $responses->count();
+        $global_statistics['total_surveys'] = $responses->count();
+        $global_statistics['total_question_responses'] = 0;
 
         foreach ($responses as $response) {
             foreach ($response->questions as $index => $questionId) {
                 $character = $response->character;
                 $rating = $response->responses[$index];
 
-                if (! isset($statistics[$questionId]['character_counts'][$character])) {
+                // Increment total question responses
+                $global_statistics['total_question_responses']++;
+
+                if (!isset($statistics[$questionId]['character_counts'][$character])) {
                     $statistics[$questionId]['character_counts'][$character] = 0;
                 }
                 $statistics[$questionId]['character_counts'][$character]++;
@@ -103,10 +109,17 @@ class SurveyController extends Controller
             }
         }
 
+        // Get all characters for description lookup
+        $charactersMap = StarWarsCharacter::select('name as label', 'slug as value', 'description')
+            ->get()
+            ->keyBy('value');
+
         // Find the most chosen character for each question
         foreach ($statistics as $questionId => &$stat) {
             arsort($stat['character_counts']);
-            $stat['most_chosen_character'] = key($stat['character_counts']);
+            $mostChosenCharacterSlug = key($stat['character_counts']);
+            $stat['most_chosen_character'] = $mostChosenCharacterSlug;
+            $stat['most_chosen_character_description'] = $charactersMap[$mostChosenCharacterSlug]?->description ?? '';
 
             // Calculate the mode (most common answer)
             $response_counts = $stat['response_counts'];
@@ -128,16 +141,27 @@ class SurveyController extends Controller
         }
 
         // Get all characters for label resolution
-        $characters = StarWarsCharacter::select('name as label', 'slug as value', 'description')
-            ->orderBy('name')
-            ->get();
+        $characters = $charactersMap->values()->sortBy('label')->values();
 
-        $global_statistics['most_popular_character_overall'] = SurveyResponse::select('character')
+        $mostPopularCharacterData = SurveyResponse::select('character')
+            ->selectRaw('COUNT(*) as count')
             ->groupBy('character')
             ->orderByRaw('COUNT(*) DESC')
             ->limit(1)
-            ->pluck('character')
             ->first();
+
+        $global_statistics['most_popular_character_overall'] = $mostPopularCharacterData?->character;
+        $global_statistics['most_popular_character_count'] = $mostPopularCharacterData?->count ?? 0;
+
+        $leastPopularCharacterData = SurveyResponse::select('character')
+            ->selectRaw('COUNT(*) as count')
+            ->groupBy('character')
+            ->orderByRaw('COUNT(*) ASC')
+            ->limit(1)
+            ->first();
+
+        $global_statistics['least_popular_character_overall'] = $leastPopularCharacterData?->character;
+        $global_statistics['least_popular_character_count'] = $leastPopularCharacterData?->count ?? 0;
 
         return Inertia::render('Survey/Statistics', [
             'statistics' => $statistics,
@@ -149,18 +173,18 @@ class SurveyController extends Controller
     public function characterStatistics(): Response
     {
         $character = request('character');
-        $responses = SurveyResponse::when($character, fn ($query) => $query->where('character', $character))->get();
+        $responses = SurveyResponse::when($character, fn($query) => $query->where('character', $character))->get();
         $questions = SurveyQuestion::all()->keyBy('id');
 
         $statistics = [];
 
         foreach ($responses as $response) {
             foreach ($response->questions as $index => $questionId) {
-                if (! isset($questions[$questionId])) {
+                if (!isset($questions[$questionId])) {
                     continue;
                 }
 
-                if (! isset($statistics[$questionId])) {
+                if (!isset($statistics[$questionId])) {
                     $statistics[$questionId] = [
                         'question' => $questions[$questionId]->question,
                         'response_counts' => array_fill(1, 10, 0),
