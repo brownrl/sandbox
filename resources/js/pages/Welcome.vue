@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { dashboard, login, register, clock, survey, ball, puzzle, snakedo, jokes, aStar } from '@/routes';
+import { dashboard, login, register, clock, survey, ball, puzzle, snakedo, jokes, aStar, leBall } from '@/routes';
 import { Head, Link } from '@inertiajs/vue3';
 
 interface ToyItem {
@@ -51,6 +51,14 @@ const toys: ToyItem[] = [
         description: 'A* algorithm visualization - watch robots navigate!',
         color: 'from-cyan-500 to-blue-400',
         rotation: 'hover:rotate-12'
+    },
+    {
+        route: leBall(),
+        emoji: '🎯',
+        title: 'Le Ball',
+        description: 'Physics puzzle! Guide the ball to the bucket!',
+        color: 'from-indigo-500 to-purple-400',
+        rotation: 'hover:-rotate-6'
     },
     {
         route: survey(),
