@@ -126,7 +126,7 @@ const generateRandomShapes = () => {
     const startY = 150;
     const spacing = 120;
 
-    for (let i = 0; i < 4; i++) {
+    for (let i = 0; i < 5; i++) {
         const width = Math.random() * 80 + 40; // 40-120px
         const height = Math.random() * 30 + 10; // 10-40px
         const rotation = Math.random() * Math.PI; // Random rotation

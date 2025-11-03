@@ -26,3 +26,9 @@ yarn-error.log
 /.nova
 /.vscode
 /.zed
+
+.qwen/
+.crush/
+.gemini/
+.github/
+.crush.json
