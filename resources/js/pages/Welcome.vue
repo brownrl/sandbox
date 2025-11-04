@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { dashboard, login, register, clock, survey, ball, puzzle, snakedo, jokes, aStar, leBall } from '@/routes';
+import { dashboard, login, register, clock, survey, ball, puzzle, snakedo, jokes, aStar, leBall, plinko } from '@/routes';
 import { Head, Link } from '@inertiajs/vue3';
 import DoNotPressButton from '@/components/DoNotPressButton.vue';
 
@@ -76,6 +76,14 @@ const toys: ToyItem[] = [
         description: 'Dad jokes so bad they\'re good!',
         color: 'from-green-500 to-teal-400',
         rotation: 'hover:rotate-6'
+    },
+    {
+        route: plinko(),
+        emoji: '💰',
+        title: 'Plinko',
+        description: 'Drop the chip and win big! Price is Right style!',
+        color: 'from-amber-500 to-yellow-400',
+        rotation: 'hover:rotate-12'
     }
 ];
 </script>
