@@ -16,14 +16,9 @@ class PlinkoGameFactory extends Factory
      */
     public function definition(): array
     {
-        $dropPosition = fake()->numberBetween(0, 8);
-        $finalSlot = fake()->numberBetween(0, 8);
-        $score = $this->getScoreForSlot($finalSlot);
-
         return [
             'user_id' => null,
             'score' => $score,
-            'drop_position' => $dropPosition,
             'final_slot' => $finalSlot,
             'path' => null,
         ];

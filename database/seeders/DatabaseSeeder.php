@@ -18,6 +18,7 @@ class DatabaseSeeder extends Seeder
             SurveyQuestionSeeder::class,
             SurveyResponseSeeder::class,
             OmarJokeSeeder::class,
+            RealisticPlinkoGameSeeder::class,
         ]);
 
         User::firstOrCreate([

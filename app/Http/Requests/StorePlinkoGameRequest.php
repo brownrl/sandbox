@@ -23,9 +23,13 @@ class StorePlinkoGameRequest extends FormRequest
     {
         return [
             'score' => ['required', 'integer', 'min:0', 'in:0,100,500,1000,10000'],
-            'drop_position' => ['required', 'integer', 'min:0', 'max:8'],
             'final_slot' => ['required', 'integer', 'min:0', 'max:8'],
-            'path' => ['nullable', 'array'],
+            'drop_x' => ['required', 'numeric'],
+            'final_x' => ['required', 'numeric'],
+            'horizontal_distance' => ['required', 'numeric'],
+            'path' => ['required', 'array'],
+            'fall_time_ms' => ['required', 'integer'],
+            'peg_collisions' => ['required', 'integer'],
         ];
     }
 
@@ -39,8 +43,6 @@ class StorePlinkoGameRequest extends FormRequest
         return [
             'score.required' => 'The game score is required.',
             'score.in' => 'Invalid score value.',
-            'drop_position.required' => 'The drop position is required.',
-            'drop_position.max' => 'Invalid drop position.',
             'final_slot.required' => 'The final slot is required.',
             'final_slot.max' => 'Invalid final slot.',
         ];

@@ -56,6 +56,7 @@ Route::get('jokes', function () {
 
 Route::get('plinko', [App\Http\Controllers\PlinkoGameController::class, 'index'])->name('plinko');
 Route::post('plinko', [App\Http\Controllers\PlinkoGameController::class, 'store'])->name('plinko.store');
+Route::get('plinko/deep-dive', [App\Http\Controllers\PlinkoGameController::class, 'deepDive'])->name('plinko.deep-dive');
 
 require __DIR__.'/settings.php';
 require __DIR__.'/auth.php';

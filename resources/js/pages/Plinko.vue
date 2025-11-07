@@ -8,7 +8,6 @@ interface Game {
     user_id: number | null;
     user?: { id: number; name: string };
     score: number;
-    drop_position: number;
     final_slot: number;
     created_at: string;
 }
@@ -29,6 +28,7 @@ const props = defineProps<{
 // Game state
 const canvas = ref<HTMLCanvasElement | null>(null);
 const isDropping = ref(false);
+const isDragging = ref(false);
 const currentScore = ref<number | null>(null);
 const showScore = ref(false);
 
@@ -55,6 +55,10 @@ interface Chip {
     vx: number;
     vy: number;
     radius: number;
+    path: { x: number; y: number }[];
+    drop_x: number;
+    start_time: number;
+    peg_collisions: number;
 }
 
 let chip: Chip | null = null;
@@ -71,17 +75,20 @@ const initCanvas = () => {
 
     // Calculate peg positions
     pegs = [];
-    const pegSpacingX = CANVAS_WIDTH / COLS;
+    const pegSpacingX = CANVAS_WIDTH / COLS; // Use COLS for spacing calculation
     const pegSpacingY = (CANVAS_HEIGHT - 150) / (ROWS + 1);
 
     for (let row = 0; row < ROWS; row++) {
-        // Alternate between full row and offset row
-        const pegsInRow = COLS + 1;
-        const offset = row % 2 === 0 ? 0 : pegSpacingX / 2;
+        const isEvenRow = row % 2 === 0;
+        const pegsInRow = isEvenRow ? COLS : COLS - 1;
         
+        // Calculate offset to center the pegs in the current row
+        const totalPegsWidth = (pegsInRow - 1) * pegSpacingX;
+        const rowOffset = (CANVAS_WIDTH - totalPegsWidth) / 2;
+
         for (let col = 0; col < pegsInRow; col++) {
             pegs.push({
-                x: pegSpacingX * col + offset,
+                x: rowOffset + pegSpacingX * col,
                 y: 100 + pegSpacingY * row,
             });
         }
@@ -148,18 +155,12 @@ const drawBoard = () => {
         ctx!.fillText(`$${slot.prize.toLocaleString()}`, x + slotSpacing / 2, slotY + 35);
     });
 
-    // Draw drop zone indicators
-    const dropZoneY = 40;
-    for (let i = 0; i < COLS; i++) {
-        const x = (CANVAS_WIDTH / COLS) * i + (CANVAS_WIDTH / COLS) / 2;
-        ctx!.beginPath();
-        ctx!.arc(x, dropZoneY, 8, 0, Math.PI * 2);
-        ctx!.fillStyle = 'rgba(168, 85, 247, 0.3)';
-        ctx!.fill();
-        ctx!.strokeStyle = '#a855f7';
-        ctx!.lineWidth = 1;
-        ctx!.stroke();
-    }
+    // Draw drop zone area
+    ctx!.fillStyle = 'rgba(128, 128, 128, 0.2)'; // Greyed out
+    ctx!.fillRect(0, 20, CANVAS_WIDTH, 40); // x, y, width, height
+    ctx!.strokeStyle = 'rgba(128, 128, 128, 0.5)';
+    ctx!.lineWidth = 2;
+    ctx!.strokeRect(0, 20, CANVAS_WIDTH, 40);
 
     // Draw chip if exists
     if (chip) {
@@ -176,27 +177,11 @@ const drawBoard = () => {
     }
 };
 
-const dropChip = (dropPosition: number) => {
-    if (isDropping.value) return;
-    
-    isDropping.value = true;
-    showScore.value = false;
-    currentScore.value = null;
-
-    const x = (CANVAS_WIDTH / COLS) * dropPosition + (CANVAS_WIDTH / COLS) / 2;
-    chip = {
-        x,
-        y: 40,
-        vx: (Math.random() - 0.5) * 3, // Increased initial randomness
-        vy: 0,
-        radius: CHIP_RADIUS,
-    };
-
-    animate(dropPosition);
-};
-
-const animate = (dropPosition: number) => {
+const animate = () => {
     if (!chip || !ctx) return;
+
+    // Record path
+    chip.path.push({ x: chip.x, y: chip.y });
 
     // Apply gravity
     chip.vy += GRAVITY;
@@ -210,6 +195,9 @@ const animate = (dropPosition: number) => {
         const distance = Math.sqrt(dx * dx + dy * dy);
 
         if (distance < chip!.radius + PEG_RADIUS) {
+            // Increment peg collision counter
+            chip!.peg_collisions++;
+
             // Calculate bounce angle
             const angle = Math.atan2(dy, dx);
             const speed = Math.sqrt(chip!.vx * chip!.vx + chip!.vy * chip!.vy);
@@ -242,26 +230,38 @@ const animate = (dropPosition: number) => {
         const finalSlot = Math.floor(chip.x / slotSpacing);
         const clampedSlot = Math.max(0, Math.min(COLS - 1, finalSlot));
         
+        const final_x = chip.x;
+        const drop_x = chip.drop_x;
+        const horizontal_distance = Math.abs(final_x - drop_x);
+        const path = chip.path;
+        const fall_time_ms = Date.now() - chip.start_time;
+        const peg_collisions = chip.peg_collisions;
+
         chip = null;
         isDropping.value = false;
         currentScore.value = SLOT_PRIZES[clampedSlot];
         showScore.value = true;
 
         // Save game result
-        saveGame(dropPosition, clampedSlot, currentScore.value);
+        saveGame(clampedSlot, currentScore.value, drop_x, final_x, horizontal_distance, path, fall_time_ms, peg_collisions);
 
         return;
     }
 
-    animationFrameId = requestAnimationFrame(() => animate(dropPosition));
+    animationFrameId = requestAnimationFrame(animate);
 };
 
-const saveGame = async (dropPosition: number, finalSlot: number, score: number) => {
+const saveGame = async (finalSlot: number, score: number, drop_x: number, final_x: number, horizontal_distance: number, path: {x:number, y:number}[], fall_time_ms: number, peg_collisions: number) => {
     try {
         await router.post('/plinko', {
             score,
-            drop_position: dropPosition,
             final_slot: finalSlot,
+            drop_x,
+            final_x,
+            horizontal_distance,
+            path,
+            fall_time_ms,
+            peg_collisions,
         }, {
             preserveScroll: true,
             preserveState: true,
@@ -293,14 +293,73 @@ const formattedStats = computed(() => ({
     highestScore: `$${Math.round(props.statistics.highest_score).toLocaleString()}`,
 }));
 
+const getMousePos = (evt: MouseEvent) => {
+    const rect = canvas.value!.getBoundingClientRect();
+    return {
+        x: evt.clientX - rect.left,
+        y: evt.clientY - rect.top,
+    };
+};
+
+const handleMouseDown = (evt: MouseEvent) => {
+    if (isDropping.value || isDragging.value) return;
+
+    const { x, y } = getMousePos(evt);
+
+    if (y > 20 && y < 60) { // In the drop zone
+        isDragging.value = true;
+        showScore.value = false;
+        currentScore.value = null;
+        chip = {
+            x: Math.max(CHIP_RADIUS, Math.min(CANVAS_WIDTH - CHIP_RADIUS, x)),
+            y: 40,
+            vx: 0,
+            vy: 0,
+            radius: CHIP_RADIUS,
+            path: [],
+            drop_x: x,
+            start_time: Date.now(),
+            peg_collisions: 0,
+        };
+        drawBoard();
+    }
+};
+
+const handleMouseMove = (evt: MouseEvent) => {
+    if (!isDragging.value || !chip) return;
+
+    const { x } = getMousePos(evt);
+    chip.x = Math.max(CHIP_RADIUS, Math.min(CANVAS_WIDTH - CHIP_RADIUS, x));
+    drawBoard();
+};
+
+const handleMouseUp = () => {
+    if (!isDragging.value || !chip) return;
+
+    isDragging.value = false;
+    isDropping.value = true;
+    
+    chip.vx = (Math.random() - 0.5) * 3;
+
+    animate();
+};
+
 onMounted(() => {
     initCanvas();
+    canvas.value?.addEventListener('mousedown', handleMouseDown);
+    canvas.value?.addEventListener('mousemove', handleMouseMove);
+    canvas.value?.addEventListener('mouseup', handleMouseUp);
+    canvas.value?.addEventListener('mouseleave', handleMouseUp);
 });
 
 onUnmounted(() => {
     if (animationFrameId) {
         cancelAnimationFrame(animationFrameId);
     }
+    canvas.value?.removeEventListener('mousedown', handleMouseDown);
+    canvas.value?.removeEventListener('mousemove', handleMouseMove);
+    canvas.value?.removeEventListener('mouseup', handleMouseUp);
+    canvas.value?.removeEventListener('mouseleave', handleMouseUp);
 });
 </script>
 
@@ -318,6 +377,9 @@ onUnmounted(() => {
             <div class="text-center mb-8">
                 <h1 class="text-6xl font-bold text-white mb-2">Plinko</h1>
                 <p class="text-xl text-purple-200">Drop the chip and win big!</p>
+                <div class="mt-4">
+                    <a href="/plinko/deep-dive" class="text-purple-300 hover:text-purple-100">Deep Dive</a>
+                </div>
             </div>
 
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -333,18 +395,7 @@ onUnmounted(() => {
                                 class="rounded-lg shadow-2xl mb-6"
                             ></canvas>
 
-                            <!-- Drop Buttons -->
-                            <div class="flex gap-2 mb-4">
-                                <button
-                                    v-for="i in COLS"
-                                    :key="i"
-                                    @click="dropChip(i - 1)"
-                                    :disabled="isDropping"
-                                    class="px-4 py-2 bg-purple-600 hover:bg-purple-500 disabled:bg-gray-600 disabled:cursor-not-allowed text-white font-semibold rounded-lg transition-colors"
-                                >
-                                    {{ i }}
-                                </button>
-                            </div>
+                            
 
                             <!-- Score Display -->
                             <div v-if="showScore" class="text-center">
