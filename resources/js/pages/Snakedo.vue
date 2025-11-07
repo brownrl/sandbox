@@ -573,31 +573,47 @@ def build_distance_matrix_with_snake_growth(positions, grid_size):
     
     return distance_matrix
 
-def bfs_actual_path(start, end, snake_body, grid_size):
+def bfs_actual_path(start, end, snake_body, grid_size, previous_pos=None):
     """
-    BFS that returns the actual path (list of positions) avoiding snake body.
+    BFS that returns the actual path, avoiding the snake's body and immediate U-turns.
     """
     if start == end:
         return [start]
-    
-    queue = deque([(start[0], start[1], [start])])
+
+    queue = deque([(start, [start])])
     visited = {start}
-    
+
+    # Determine the direction from the previous move to avoid reversing
+    initial_move_from = None
+    if previous_pos:
+        initial_move_from = (start[0] - previous_pos[0], start[1] - previous_pos[1])
+
     while queue:
-        row, col, path = queue.popleft()
-        
-        for dr, dc in [(-1, 0), (1, 0), (0, -1), (0, 1)]:
+        current_pos, path = queue.popleft()
+        row, col = current_pos
+
+        # Shuffle directions to make paths feel more natural
+        directions = [(-1, 0), (1, 0), (0, -1), (0, 1)]
+        import random
+        random.shuffle(directions)
+
+        for dr, dc in directions:
+            # On the first step, prevent an immediate U-turn
+            if len(path) == 1 and initial_move_from:
+                if (dr, dc) == (-initial_move_from[0], -initial_move_from[1]):
+                    continue
+
             new_row, new_col = row + dr, col + dc
             new_pos = (new_row, new_col)
-            
+
             if 0 <= new_row < grid_size and 0 <= new_col < grid_size:
                 if new_pos not in visited and (new_pos not in snake_body or new_pos == end):
                     if new_pos == end:
                         return path + [new_pos]
-                    
+
                     visited.add(new_pos)
-                    queue.append((new_row, new_col, path + [new_pos]))
-    
+                    queue.append((new_pos, path + [new_pos]))
+
     return []  # No path found
 
 # Build distance matrix with snake body collision detection
@@ -650,37 +666,51 @@ if solution:
         index = solution.Value(routing.NextVar(index))
     
     # Generate complete arrow key sequence with snake body avoidance
-    print("Arrow Key Sequence (avoiding snake body):")
-    all_arrow_keys = []
+    print("Arrow Key Sequence (avoiding snake body and U-turns):")
+    full_path = [positions[route_indices[0]]]
     
     for i in range(len(route_indices) - 1):
         from_idx = route_indices[i]
         to_idx = route_indices[i + 1]
         
-        # Build snake body at this stage
-        snake_length = from_idx + 1
-        snake_body = set()
-        for k in range(max(0, from_idx - snake_length + 1), from_idx + 1):
-            snake_body.add(positions[route_indices[k] if k < len(route_indices) else from_idx])
+        # The snake's body is the set of positions it currently occupies
+        # The length of the snake is the number of items collected (i) + 1
+        snake_length = i + 1
+        snake_body = set(full_path[-snake_length:])
         
-        # Get actual path avoiding snake body
-        path = bfs_actual_path(positions[from_idx], positions[to_idx], snake_body, GRID_SIZE)
+        # Determine the previous position to avoid a U-turn
+        previous_pos = full_path[-2] if len(full_path) > 1 else None
         
-        # Convert path to arrow keys
-        for j in range(len(path) - 1):
-            curr = path[j]
-            next_pos = path[j + 1]
+        # Find the path segment from the current position to the next number
+        path_segment = bfs_actual_path(
+            full_path[-1], 
+            positions[to_idx], 
+            snake_body, 
+            GRID_SIZE, 
+            previous_pos=previous_pos
+        )
+        
+        if path_segment and len(path_segment) > 1:
+            full_path.extend(path_segment[1:])
+        elif not path_segment:
+            print(f"Warning: No path found from {full_path[-1]} to {positions[to_idx]}")
+
+    # Convert the full path to a sequence of arrow keys
+    all_arrow_keys = []
+    for i in range(len(full_path) - 1):
+        curr = full_path[i]
+        next_pos = full_path[i+1]
+        
+        if next_pos[0] < curr[0]:
+            all_arrow_keys.append('↑')
+        elif next_pos[0] > curr[0]:
+            all_arrow_keys.append('↓')
+        elif next_pos[1] < curr[1]:
+            all_arrow_keys.append('←')
+        elif next_pos[1] > curr[1]:
+            all_arrow_keys.append('→')
             
-            if next_pos[0] < curr[0]:
-                all_arrow_keys.append('↑')
-            elif next_pos[0] > curr[0]:
-                all_arrow_keys.append('↓')
-            elif next_pos[1] < curr[1]:
-                all_arrow_keys.append('←')
-            elif next_pos[1] > curr[1]:
-                all_arrow_keys.append('→')
-    
-    # Print arrow sequence in groups of 4
+    # Print arrow sequence in groups of 4 for readability
     for i in range(0, len(all_arrow_keys), 4):
         group = all_arrow_keys[i:i+4]
         print(' '.join(group))
