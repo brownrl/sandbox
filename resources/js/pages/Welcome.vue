@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { dashboard, login, register, clock, survey, ball, puzzle, snakedo, jokes, aStar, leBall, plinko } from '@/routes';
+import { dashboard, login, register, clock, survey, ball, puzzle, snakedo, jokes, aStar, leBall, plinko, yoMommaBattle } from '@/routes';
 import { Head, Link } from '@inertiajs/vue3';
 import DoNotPressButton from '@/components/DoNotPressButton.vue';
 
@@ -84,6 +84,14 @@ const toys: ToyItem[] = [
         description: 'Drop the chip and win big! Price is Right style!',
         color: 'from-amber-500 to-yellow-400',
         rotation: 'hover:rotate-12'
+    },
+    {
+        route: yoMommaBattle(),
+        emoji: '🎤',
+        title: 'AI Yo Momma Battle',
+        description: 'Watch AI models roast each other with sick burns!',
+        color: 'from-red-500 to-orange-500',
+        rotation: 'hover:-rotate-12'
     }
 ];
 </script>

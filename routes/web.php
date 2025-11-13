@@ -58,5 +58,9 @@ Route::get('plinko', [App\Http\Controllers\PlinkoGameController::class, 'index']
 Route::post('plinko', [App\Http\Controllers\PlinkoGameController::class, 'store'])->name('plinko.store');
 Route::get('plinko/deep-dive', [App\Http\Controllers\PlinkoGameController::class, 'deepDive'])->name('plinko.deep-dive');
 
+Route::get('yo-momma-battle', [App\Http\Controllers\YoMommaBattleController::class, 'index'])->name('yo-momma-battle');
+Route::get('yo-momma-battle/random-joke', [App\Http\Controllers\YoMommaBattleController::class, 'getRandomJoke'])->name('yo-momma-battle.random-joke');
+Route::post('yo-momma-battle/rate', [App\Http\Controllers\YoMommaBattleController::class, 'rateJoke'])->name('yo-momma-battle.rate');
+
 require __DIR__.'/settings.php';
 require __DIR__.'/auth.php';
