@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import { Head } from '@inertiajs/vue3';
 import EclLayout from '@/layouts/EclLayout.vue';
+import { Link } from '@inertiajs/vue3';
+import { home, eclDemo } from '@/routes';
 
 defineOptions({
     layout: EclLayout,
@@ -16,7 +18,7 @@ defineOptions({
             <nav class="ecl-page-header__breadcrumb ecl-breadcrumb" aria-label="You are here:" data-ecl-breadcrumb>
                 <ol class="ecl-breadcrumb__container">
                     <li class="ecl-breadcrumb__segment" data-ecl-breadcrumb-item>
-                        <a href="/" class="ecl-link ecl-link--standalone ecl-link--no-visited ecl-breadcrumb__link">Home</a>
+                        <Link :href="home()" class="ecl-link ecl-link--standalone ecl-link--no-visited ecl-breadcrumb__link">Home</Link>
                         <svg class="ecl-icon ecl-icon--xs ecl-icon--rotate-90 ecl-breadcrumb__icon" 
                              focusable="false" 
                              aria-hidden="true">
@@ -24,7 +26,7 @@ defineOptions({
                         </svg>
                     </li>
                     <li class="ecl-breadcrumb__segment" data-ecl-breadcrumb-item>
-                        <a href="/ecl-demo" class="ecl-link ecl-link--standalone ecl-link--no-visited ecl-breadcrumb__link">ECL Demo</a>
+                        <Link :href="eclDemo()" class="ecl-link ecl-link--standalone ecl-link--no-visited ecl-breadcrumb__link">ECL Demo</Link>
                         <svg class="ecl-icon ecl-icon--xs ecl-icon--rotate-90 ecl-breadcrumb__icon" 
                              focusable="false" 
                              aria-hidden="true">
@@ -430,7 +432,7 @@ defineOptions({
                         <strong>More ECL Examples:</strong>
                     </p>
                     <p class="ecl-u-type-paragraph">
-                        Return to the main <a href="/ecl-demo" class="ecl-link ecl-link--standalone">ECL Demo</a> 
+                        Return to the main <Link :href="eclDemo()" class="ecl-link ecl-link--standalone">ECL Demo</Link> 
                         to see other components like accordions, breadcrumbs, and typography examples.
                     </p>
                 </div>

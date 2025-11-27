@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import { Head } from '@inertiajs/vue3';
 import EclLayout from '@/layouts/EclLayout.vue';
+import { Link } from '@inertiajs/vue3';
+import { home, eclTableDemo } from '@/routes';
 
 defineOptions({
     layout: EclLayout,
@@ -16,7 +18,7 @@ defineOptions({
             <nav class="ecl-page-header__breadcrumb ecl-breadcrumb" aria-label="You are here:" data-ecl-breadcrumb>
                 <ol class="ecl-breadcrumb__container">
                     <li class="ecl-breadcrumb__segment" data-ecl-breadcrumb-item>
-                        <a href="/" class="ecl-link ecl-link--standalone ecl-link--no-visited ecl-breadcrumb__link">Home</a>
+                        <Link :href="home()" class="ecl-link ecl-link--standalone ecl-link--no-visited ecl-breadcrumb__link">Home</Link>
                         <svg class="ecl-icon ecl-icon--xs ecl-icon--rotate-90 ecl-breadcrumb__icon" 
                              focusable="false" 
                              aria-hidden="true">
@@ -77,7 +79,7 @@ defineOptions({
                 </p>
                 <p class="ecl-u-type-paragraph">
                     See comprehensive table examples including default, zebra-striped, multi-header, and sortable tables in the 
-                    <a href="/ecl-table-demo" class="ecl-link ecl-link--standalone">ECL Table Demo</a>.
+                    <Link :href="eclTableDemo()" class="ecl-link ecl-link--standalone">ECL Table Demo</Link>.
                 </p>
             </div>
 
