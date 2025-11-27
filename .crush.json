@@ -25,6 +25,18 @@
       "env": {
         "SITE_PATH": "/Users/brownrl/Herd/sandbox"
       }
+    },
+    "recipes": {
+      "command": "node",
+      "type": "stdio",
+      "args": ["/Users/brownrl/Herd/sandbox/node_modules/recipes_mcp/index.js"]
+    },
+    "ecl": {
+      "command": "npx",
+      "type": "stdio",
+      "args": [
+        "ecl-mcp"
+      ]
     }
   }
 }
