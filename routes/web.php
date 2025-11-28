@@ -39,6 +39,9 @@ Route::get('ecl-table-demo', function () {
     return Inertia::render('EclTableDemo')->rootView('ecl');
 })->name('ecl-table-demo');
 
+Route::get('ecl-contact-demo', [App\Http\Controllers\EclContactController::class, 'show'])->name('ecl-contact-demo');
+Route::post('ecl-contact-demo', [App\Http\Controllers\EclContactController::class, 'store'])->name('ecl-contact-demo.store');
+
 Route::get('le-ball', App\Http\Controllers\LeBallController::class)->name('le-ball');
 
 Route::get('survey', [App\Http\Controllers\SurveyController::class, 'show'])->name('survey');

@@ -435,6 +435,9 @@ defineOptions({
                         Return to the main <Link :href="eclDemo()" class="ecl-link ecl-link--standalone">ECL Demo</Link> 
                         to see other components like accordions, breadcrumbs, and typography examples.
                     </p>
+                    <p class="ecl-u-type-paragraph">
+                        Try out form components in the <a href="/ecl-contact-demo" class="ecl-link ecl-link--standalone">ECL Contact Form Demo</a>.
+                    </p>
                 </div>
             </section>
 

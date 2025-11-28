@@ -81,6 +81,10 @@ defineOptions({
                     See comprehensive table examples including default, zebra-striped, multi-header, and sortable tables in the 
                     <Link :href="eclTableDemo()" class="ecl-link ecl-link--standalone">ECL Table Demo</Link>.
                 </p>
+                <p class="ecl-u-type-paragraph">
+                    Try out form components including text fields, text areas, and select dropdowns in the 
+                    <a href="/ecl-contact-demo" class="ecl-link ecl-link--standalone">ECL Contact Form Demo</a>.
+                </p>
             </div>
 
             <h3 class="ecl-u-type-heading-3 ecl-u-mt-l">About Lorem Ipsum</h3>
