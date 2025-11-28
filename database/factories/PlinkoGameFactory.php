@@ -16,6 +16,9 @@ class PlinkoGameFactory extends Factory
      */
     public function definition(): array
     {
+        $finalSlot = $this->faker->numberBetween(0, 8);
+        $score = $this->getScoreForSlot($finalSlot);
+
         return [
             'user_id' => null,
             'score' => $score,

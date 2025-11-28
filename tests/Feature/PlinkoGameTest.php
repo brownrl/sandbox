@@ -75,12 +75,16 @@ class PlinkoGameTest extends TestCase
     {
         $validData = [
             'score' => 10000,
-            'drop_position' => 4,
             'final_slot' => 4,
+            'drop_x' => 300.0,
+            'final_x' => 310.0,
+            'horizontal_distance' => 10.0,
             'path' => [
                 ['x' => 300, 'y' => 100],
                 ['x' => 310, 'y' => 150],
             ],
+            'fall_time_ms' => 2000,
+            'peg_collisions' => 15,
         ];
 
         $response = $this->post(route('plinko.store'), $validData);
@@ -89,7 +93,6 @@ class PlinkoGameTest extends TestCase
 
         $this->assertDatabaseHas('plinko_games', [
             'score' => 10000,
-            'drop_position' => 4,
             'final_slot' => 4,
         ]);
     }
@@ -100,8 +103,13 @@ class PlinkoGameTest extends TestCase
 
         $validData = [
             'score' => 1000,
-            'drop_position' => 2,
             'final_slot' => 2,
+            'drop_x' => 200.0,
+            'final_x' => 210.0,
+            'horizontal_distance' => 10.0,
+            'path' => [['x' => 200, 'y' => 100]],
+            'fall_time_ms' => 1500,
+            'peg_collisions' => 10,
         ];
 
         $response = $this->actingAs($user)->post(route('plinko.store'), $validData);
@@ -118,8 +126,13 @@ class PlinkoGameTest extends TestCase
     {
         $validData = [
             'score' => 500,
-            'drop_position' => 1,
             'final_slot' => 1,
+            'drop_x' => 150.0,
+            'final_x' => 160.0,
+            'horizontal_distance' => 10.0,
+            'path' => [['x' => 150, 'y' => 100]],
+            'fall_time_ms' => 1200,
+            'peg_collisions' => 8,
         ];
 
         $response = $this->post(route('plinko.store'), $validData);
@@ -136,46 +149,25 @@ class PlinkoGameTest extends TestCase
     {
         $response = $this->post(route('plinko.store'), []);
 
-        $response->assertSessionHasErrors(['score', 'drop_position', 'final_slot']);
+        $response->assertSessionHasErrors(['score', 'final_slot', 'drop_x', 'final_x', 'horizontal_distance', 'path', 'fall_time_ms', 'peg_collisions']);
     }
 
     public function test_plinko_store_validates_score_values(): void
     {
         $invalidData = [
             'score' => 999,
-            'drop_position' => 4,
             'final_slot' => 4,
+            'drop_x' => 300.0,
+            'final_x' => 310.0,
+            'horizontal_distance' => 10.0,
+            'path' => [['x' => 300, 'y' => 100]],
+            'fall_time_ms' => 2000,
+            'peg_collisions' => 15,
         ];
 
         $response = $this->post(route('plinko.store'), $invalidData);
 
         $response->assertSessionHasErrors(['score']);
-    }
-
-    public function test_plinko_store_validates_drop_position_range(): void
-    {
-        $invalidData = [
-            'score' => 1000,
-            'drop_position' => 9,
-            'final_slot' => 4,
-        ];
-
-        $response = $this->post(route('plinko.store'), $invalidData);
-
-        $response->assertSessionHasErrors(['drop_position']);
-    }
-
-    public function test_plinko_store_validates_final_slot_range(): void
-    {
-        $invalidData = [
-            'score' => 1000,
-            'drop_position' => 4,
-            'final_slot' => 10,
-        ];
-
-        $response = $this->post(route('plinko.store'), $invalidData);
-
-        $response->assertSessionHasErrors(['final_slot']);
     }
 
     public function test_plinko_store_accepts_valid_score_values(): void
@@ -185,8 +177,13 @@ class PlinkoGameTest extends TestCase
         foreach ($validScores as $score) {
             $validData = [
                 'score' => $score,
-                'drop_position' => 4,
                 'final_slot' => 4,
+                'drop_x' => 300.0,
+                'final_x' => 310.0,
+                'horizontal_distance' => 10.0,
+                'path' => [['x' => 300, 'y' => 100]],
+                'fall_time_ms' => 2000,
+                'peg_collisions' => 15,
             ];
 
             $response = $this->post(route('plinko.store'), $validData);
@@ -216,8 +213,6 @@ class PlinkoGameTest extends TestCase
     {
         $game = PlinkoGame::factory()->create();
 
-        $this->assertGreaterThanOrEqual(0, $game->drop_position);
-        $this->assertLessThanOrEqual(8, $game->drop_position);
         $this->assertGreaterThanOrEqual(0, $game->final_slot);
         $this->assertLessThanOrEqual(8, $game->final_slot);
     }
